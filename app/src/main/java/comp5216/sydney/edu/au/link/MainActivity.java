@@ -16,7 +16,7 @@ import androidx.navigation.ui.NavigationUI;
 import comp5216.sydney.edu.au.link.databinding.ActivityMainBinding;
 
 import android.view.Menu;
-import android.view.MenuItem;
+
 
 public class MainActivity extends AppCompatActivity {
 
