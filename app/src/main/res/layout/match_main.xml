@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
+    <TextView
+        android:id="@+id/match_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User name"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="376dp" />
+
+    <ImageButton
+        android:id="@+id/match_gobackimageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="?attr/actionModeCloseDrawable"
+        tools:layout_editor_absoluteX="18dp"
+        tools:layout_editor_absoluteY="13dp" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/match_userphoto"
+        android:layout_width="171dp"
+        android:layout_height="173dp"
+        android:src="@drawable/your_image"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
+        tools:layout_editor_absoluteX="120dp"
+        tools:layout_editor_absoluteY="186dp"
+        tools:srcCompat="@tools:sample/avatars"/>
+
+    <Button
+        android:id="@+id/match_matchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Match"
+        tools:layout_editor_absoluteX="161dp"
+        tools:layout_editor_absoluteY="424dp" />
+
+    <TextView
+        android:id="@+id/match_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Match with user to start a conversation"
+        tools:layout_editor_absoluteX="92dp"
+        tools:layout_editor_absoluteY="499dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

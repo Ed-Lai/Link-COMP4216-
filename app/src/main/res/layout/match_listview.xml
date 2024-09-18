@@ -1,0 +1,42 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/match_matches_userphoto"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/your_image"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/match_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:text="User name"
+        android:textSize="24sp" />
+    <Button
+        android:id="@+id/match_list_matchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Match"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        />
+    <Button
+        android:id="@+id/match_list_deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Match"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        />
+</LinearLayout>
