@@ -1,77 +1,167 @@
 package comp5216.sydney.edu.au.link;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import com.google.android.material.snackbar.Snackbar;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentActivity;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.OpeningHours;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 
-import android.view.View;
+import java.util.Arrays;
+import java.util.List;
 
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
-import comp5216.sydney.edu.au.link.databinding.ActivityMainBinding;
-
-import android.view.Menu;
-import android.view.MenuItem;
-
-public class MainActivity extends AppCompatActivity {
-
-    private AppBarConfiguration appBarConfiguration;
-    private ActivityMainBinding binding;
+    private GoogleMap mMap;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private PlacesClient placesClient;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        // Initialize the Places API
+        Places.initialize(getApplicationContext(), "AIzaSyBbShZTP0Y1lqvik4h5weeJyQJRf9Dv7NM");
+        placesClient = Places.createClient(this);
 
-        setSupportActionBar(binding.toolbar);
+        // Get the map fragment and set up the callback for when the map is ready
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapFragment);
+        mapFragment.getMapAsync(this);
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        // Set up Fused Location Provider to get user's location
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        binding.fab.setOnClickListener(new View.OnClickListener() {
+        // Request location permissions if not already granted
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Get user's current location and update the map
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                LatLng userLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+                                // Move the map's camera to the user's location
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng, 15));
+
+                                // Fetch nearby places and add markers to the map
+                                fetchNearbyPlaces(location);
+                            }
+                        }
+                    });
+        }
+
+        // Set a marker click listener
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Action", null).show();
+            public boolean onMarkerClick(Marker marker) {
+                String placeId = (String) marker.getTag();  // Get the place ID from the marker tag
+
+                // Fetch place details using placeId
+                List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.OPENING_HOURS, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS);
+                FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
+
+                placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+                    Place place = response.getPlace();
+
+                    // Pass place details to VenueDetailActivity
+                    Intent intent = new Intent(MainActivity.this, VenueDetailActivity.class);
+                    intent.putExtra("placeName", place.getName());
+                    intent.putExtra("address", place.getAddress());
+
+                    // Format opening hours
+                    String openingHoursFormatted = formatOpeningHours(place.getOpeningHours());
+                    intent.putExtra("openingHours", openingHoursFormatted);
+
+                    // Fetch and pass the photo metadata
+                    if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
+                        PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);  // Get the first photo
+                        intent.putExtra("photoMetadata", photoMetadata);
+                    }
+
+                    startActivity(intent);
+                });
+
+                return false;
             }
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    private String formatOpeningHours(OpeningHours openingHours) {
+        if (openingHours == null || openingHours.getWeekdayText() == null) {
+            return "No opening hours available";
         }
-
-        return super.onOptionsItemSelected(item);
+        StringBuilder formattedHours = new StringBuilder();
+        for (String dayHours : openingHours.getWeekdayText()) {
+            formattedHours.append(dayHours).append("\n");
+        }
+        return formattedHours.toString();
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
+    private void fetchNearbyPlaces(Location location) {
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ID); // Add Place ID field
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            placesClient.findCurrentPlace(request).addOnSuccessListener((response) -> {
+                for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                    Place place = placeLikelihood.getPlace();
+                    LatLng placeLatLng = place.getLatLng();
+                    String placeId = place.getId(); // Get place ID
+
+                    if (placeLatLng != null) {
+                        // Add marker with place ID as tag
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                .position(placeLatLng)
+                                .title(place.getName()));
+
+                        // Store placeId in marker's tag
+                        marker.setTag(placeId);
+                    }
+                }
+            }).addOnFailureListener((exception) -> {
+                Toast.makeText(MainActivity.this, "Failed to get places: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+            });
+        }
     }
 }
