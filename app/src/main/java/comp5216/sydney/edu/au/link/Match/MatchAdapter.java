@@ -13,12 +13,17 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
-
 import comp5216.sydney.edu.au.link.R;
 
 public class MatchAdapter extends ArrayAdapter<MatchPerson> {
-    public MatchAdapter(Context context, List<MatchPerson> items) {
+    private List<MatchPerson> matchPersonList;
+    private OnPersonDeletedListener listener;  // 回调接口
+
+    // for delete listener
+    public MatchAdapter(Context context, List<MatchPerson> items, OnPersonDeletedListener listener) {
         super(context, 0, items);
+        this.matchPersonList = items;
+        this.listener = listener;
     }
 
     @Override
@@ -34,7 +39,7 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         Button match = convertView.findViewById(R.id.match_matchButton);
         Button delete = convertView.findViewById(R.id.match_list_deleteButton);
 
-        // set name
+        // Set name
         name.setText(item.getMatchPersonName());
 
         // Use Glide to load image
@@ -45,6 +50,25 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
             photo.setImageResource(R.drawable.default_image);
         }
 
+        // Set delete button click listener
+        delete.setOnClickListener(v -> {
+            // 从列表中删除当前项
+            matchPersonList.remove(position);
+
+            // 通知适配器数据已更新
+            notifyDataSetChanged();
+
+            // 通知Activity或Fragment，执行删除Firebase数据
+            if (listener != null) {
+                listener.onPersonDeleted(item);
+            }
+        });
+
         return convertView;
+    }
+
+    // interface used to matchActivity
+    public interface OnPersonDeletedListener {
+        void onPersonDeleted(MatchPerson person);
     }
 }

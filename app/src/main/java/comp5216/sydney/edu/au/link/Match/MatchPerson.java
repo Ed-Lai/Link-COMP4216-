@@ -1,35 +1,24 @@
 package comp5216.sydney.edu.au.link.Match;
 
+import com.google.firebase.firestore.PropertyName;
 
-import androidx.annotation.NonNull;
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-
-
-
-@Entity(tableName = "todolist")
 public class MatchPerson {
-    @PrimaryKey(autoGenerate = true)
-    @NonNull
-    @ColumnInfo(name = "MatchPersonID")
-    private int matchPersonID;
-
-    @ColumnInfo(name = "MatchPersonName")
+    @PropertyName("name")
     private String matchPersonName;
 
-    @ColumnInfo(name = "Hobby")
+    @PropertyName("hobby")
     private String hobby;
 
-    @ColumnInfo(name = "photo")
+    @PropertyName("photo_url")
     private String photoPath;
 
-    public int getMatchPersonID() {
-        return matchPersonID;
-    }
+    // 无参数构造函数是必要的，供Firestore使用
+    public MatchPerson() {}
 
-    public void setMatchPersonID(int matchPersonID) {
-        this.matchPersonID = matchPersonID;
+    public MatchPerson(String matchPersonName, String hobby, String photoPath) {
+        this.matchPersonName = matchPersonName;
+        this.hobby = hobby;
+        this.photoPath = photoPath;
     }
 
     public String getMatchPersonName() {
@@ -47,6 +36,7 @@ public class MatchPerson {
     public void setHobby(String hobby) {
         this.hobby = hobby;
     }
+
     public String getPhotoPath() {
         return photoPath;
     }
@@ -54,7 +44,4 @@ public class MatchPerson {
     public void setPhotoPath(String photoPath) {
         this.photoPath = photoPath;
     }
-
-
-
 }
