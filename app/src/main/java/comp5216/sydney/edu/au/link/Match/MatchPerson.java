@@ -1,16 +1,12 @@
 package comp5216.sydney.edu.au.link.Match;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.google.android.material.imageview.ShapeableImageView;
 
-import java.io.ByteArrayOutputStream;
 
 @Entity(tableName = "todolist")
 public class MatchPerson {
