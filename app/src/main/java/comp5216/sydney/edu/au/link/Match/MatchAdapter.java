@@ -20,8 +20,9 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
     public MatchAdapter(Context context, List<MatchPerson> items) {
         super(context, 0, items);
     }
+
     @Override
-    public View getView(int position, View convertView, ViewGroup parent){
+    public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.match_listview, parent, false);
         }
@@ -45,4 +46,5 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         }
 
         return convertView;
+    }
 }
