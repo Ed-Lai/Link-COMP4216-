@@ -13,7 +13,7 @@
         android:layout_height="60dp"
         android:src="@drawable/your_image"
         app:shapeAppearanceOverlay="@style/CircleImageView"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@drawable/default_image" />
 
     <TextView
         android:id="@+id/match_name"
@@ -35,7 +35,7 @@
         android:id="@+id/match_list_deleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Match"
+        android:text="Delete"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         />
