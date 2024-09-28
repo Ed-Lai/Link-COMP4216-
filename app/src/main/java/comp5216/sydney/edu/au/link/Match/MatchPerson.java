@@ -12,7 +12,7 @@ public class MatchPerson {
     @PropertyName("photo_url")
     private String photoPath;
 
-    // 无参数构造函数是必要的，供Firestore使用
+
     public MatchPerson() {}
 
     public MatchPerson(String matchPersonName, String hobby, String photoPath) {

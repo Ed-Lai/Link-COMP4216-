@@ -11,32 +11,42 @@
         android:id="@+id/match_matches_userphoto"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:src="@drawable/your_image"
         app:shapeAppearanceOverlay="@style/CircleImageView"
         tools:srcCompat="@drawable/default_image" />
 
-    <TextView
-        android:id="@+id/match_name"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
-        android:text="User name"
-        android:textSize="24sp" />
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginLeft="10dp">
+
+        <TextView
+            android:id="@+id/match_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="User name"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/match_list_matchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Match"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        />
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp" />
+
     <Button
         android:id="@+id/match_list_deleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Delete"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        />
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp" />
+
 </LinearLayout>

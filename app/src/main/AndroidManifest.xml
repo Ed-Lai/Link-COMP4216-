@@ -14,7 +14,7 @@
         android:theme="@style/Theme.Link"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".Match.MatchActivity"
             android:exported="true"
             android:theme="@style/Theme.Link">
             <intent-filter>

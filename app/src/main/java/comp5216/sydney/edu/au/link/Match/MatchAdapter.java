@@ -17,7 +17,7 @@ import comp5216.sydney.edu.au.link.R;
 
 public class MatchAdapter extends ArrayAdapter<MatchPerson> {
     private List<MatchPerson> matchPersonList;
-    private OnPersonDeletedListener listener;  // 回调接口
+    private OnPersonDeletedListener listener;
 
     // for delete listener
     public MatchAdapter(Context context, List<MatchPerson> items, OnPersonDeletedListener listener) {
@@ -52,13 +52,13 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
 
         // Set delete button click listener
         delete.setOnClickListener(v -> {
-            // 从列表中删除当前项
+            // delete current
             matchPersonList.remove(position);
 
-            // 通知适配器数据已更新
+            // update data
             notifyDataSetChanged();
 
-            // 通知Activity或Fragment，执行删除Firebase数据
+            // delete  Firebase data
             if (listener != null) {
                 listener.onPersonDeleted(item);
             }
