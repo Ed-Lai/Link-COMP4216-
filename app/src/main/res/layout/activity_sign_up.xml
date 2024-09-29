@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient">
+
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/back_button"
+        android:background="@android:color/transparent"
+        android:contentDescription="Back Button"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:scaleType="centerInside" />
+
+    <!-- Login Button (Top Right) -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/register_button"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="290dp"
+        android:layout_marginTop="30dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Login"
+        android:textColor="#47A6FE"
+        android:textSize="15sp"
+        android:background="@drawable/register_button"
+        android:backgroundTint="@null"
+        android:textStyle="normal" />
+
+    <!-- Header: Add Account -->
+    <TextView
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dp"
+        android:text="Add Account"
+        android:textSize="30sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+
+    <!-- Email Label -->
+    <TextView
+        android:id="@+id/label_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="230dp"
+        android:layout_alignBaseline="@id/input_email"
+        android:text="Email"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Email Input -->
+    <EditText
+        android:id="@+id/input_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="230dp"
+
+        android:text="myname@gmail.com"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <!-- Username Label -->
+    <TextView
+        android:id="@+id/label_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/input_username"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Username"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Username Input -->
+    <EditText
+        android:id="@+id/input_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="150dp"
+        android:layout_below="@id/input_email"
+        android:text="Your_User_name"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <!-- Password Label -->
+    <TextView
+        android:id="@+id/label_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/input_password"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Password"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Password Input -->
+    <EditText
+        android:id="@+id/input_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="150dp"
+        android:layout_below="@id/input_username"
+        android:text="******************"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <!-- Name Label -->
+    <TextView
+        android:id="@+id/label_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/input_name"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Name"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Name Input -->
+    <EditText
+        android:id="@+id/input_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_password"
+        android:layout_marginStart="150dp"
+        android:text="First Last"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <!-- Gender Label -->
+    <TextView
+        android:id="@+id/label_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/input_gender"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Gender"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Gender Input -->
+    <EditText
+        android:id="@+id/input_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_name"
+        android:layout_marginStart="150dp"
+        android:text="Male/Female"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <!-- Create New Account Button -->
+    <Button
+        android:id="@+id/create_account_button"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/label_gender"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:backgroundTint="#47A6FE"
+        android:text="Create new account"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+</RelativeLayout>
