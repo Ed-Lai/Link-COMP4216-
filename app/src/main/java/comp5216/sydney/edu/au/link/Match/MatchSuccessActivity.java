@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,7 +25,7 @@ public class MatchSuccessActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_match_success);
+        setContentView(R.layout.match_success);
 
         db = FirebaseFirestore.getInstance();
 

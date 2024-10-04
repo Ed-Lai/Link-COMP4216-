@@ -54,7 +54,6 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         } else {
             photo.setImageResource(R.drawable.default_image);
         }
-
         match.setOnClickListener(v -> {
             // 设置按钮状态为“Matching”
             match.setText("Matched");

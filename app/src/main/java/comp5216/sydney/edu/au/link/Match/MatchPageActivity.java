@@ -15,8 +15,10 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import comp5216.sydney.edu.au.link.R;
@@ -32,6 +34,13 @@ public class MatchPageActivity extends AppCompatActivity {
     private String currentUserId;
     private String matchedUserId;
 
+
+    private List<MatchPerson> matchedPersons; // 用户数据列表
+    private int currentIndex = 0; // 当前显示用户的索引
+
+    private ImageButton rightPersonButton;
+    private ImageButton leftPersonButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,16 +48,12 @@ public class MatchPageActivity extends AppCompatActivity {
 
         // 初始化 Firebase Firestore 和当前用户ID
         db = FirebaseFirestore.getInstance();
-        currentUserId = getCurrentUserId();
+       // currentUserId = getCurrentUserId();
+        currentUserId = "1";
 
-        // 如果用户未登录，提醒登录并退出当前页面
-        if (currentUserId == null) {
-            promptUserToLogin();
-            return;
-        }
 
         // 获取 Intent 中传递的匹配用户ID
-        matchedUserId = getIntent().getStringExtra("matchedUserId");
+        matchedUserId = getIntent().getStringExtra("UserID");
         if (matchedUserId == null) {
             Toast.makeText(this, "Error: No matched user provided.", Toast.LENGTH_SHORT).show();
             finish();
@@ -63,8 +68,10 @@ public class MatchPageActivity extends AppCompatActivity {
         goBackButton = findViewById(R.id.match_gobackimageButton);
 
         // 设置匹配用户信息
-        loadMatchedUserInfo();
+        loadMatchedUsers();
 
+        rightPersonButton.setOnClickListener(v -> showNextPerson());
+        leftPersonButton.setOnClickListener(v -> showPreviousPerson());
         // 设置匹配按钮点击事件
         matchButton.setOnClickListener(v -> {
             // 设置按钮状态为“Matching”
@@ -91,29 +98,59 @@ public class MatchPageActivity extends AppCompatActivity {
         goBackButton.setOnClickListener(v -> onBackPressed());
     }
 
-    private void loadMatchedUserInfo() {
-        // 从 Firebase 获取匹配用户信息并更新 UI（这里假设 matchedUserId 可用于查找用户信息）
-        db.collection("matchpersons").document(matchedUserId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String name = documentSnapshot.getString("name");
-                        String photoUrl = documentSnapshot.getString("photo_url");
-
-                        // 设置匹配用户的姓名和照片
-                        matchName.setText(name);
-                        if (photoUrl != null && !photoUrl.isEmpty()) {
-                            Glide.with(this).load(photoUrl).into(matchUserPhoto);
-                        } else {
-                            matchUserPhoto.setImageResource(R.drawable.default_image);
-                        }
+    private void loadMatchedUsers() {
+        String currentUserId = getCurrentUserId();
+        db.collection("matchpersons")
+                .whereNotEqualTo("userID", currentUserId) // 不包括当前用户
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    matchedPersons.clear();
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        MatchPerson person = document.toObject(MatchPerson.class);
+                        matchedPersons.add(person);
+                    }
+                    // 显示第一个用户
+                    if (!matchedPersons.isEmpty()) {
+                        showPersonAtIndex(currentIndex);
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error loading matched user info", e);
-                    Toast.makeText(MatchPageActivity.this, "Error loading user info.", Toast.LENGTH_SHORT).show();
+                    Log.e("Firestore", "Error loading matched users", e);
+                    Toast.makeText(this, "Error loading users info.", Toast.LENGTH_SHORT).show();
                 });
     }
+    // 显示下一个用户
+    private void showNextPerson() {
+        if (currentIndex < matchedPersons.size() - 1) {
+            currentIndex++;
+            showPersonAtIndex(currentIndex);
+        } else {
+            Toast.makeText(this, "No more matches.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
+    // 显示上一个用户
+    private void showPreviousPerson() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            showPersonAtIndex(currentIndex);
+        } else {
+            Toast.makeText(this, "This is the first match.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // 根据索引显示用户信息
+    private void showPersonAtIndex(int index) {
+        MatchPerson person = matchedPersons.get(index);
+        matchName.setText(person.getMatchPersonName());
+
+        // 使用 Glide 加载用户图片
+        if (person.getPhotoPath() != null && !person.getPhotoPath().isEmpty()) {
+            Glide.with(this).load(person.getPhotoPath()).into(matchUserPhoto);
+        } else {
+            matchUserPhoto.setImageResource(R.drawable.default_image);
+        }
+    }
     private String getCurrentUserId() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
@@ -123,11 +160,5 @@ public class MatchPageActivity extends AppCompatActivity {
         }
     }
 
-    private void promptUserToLogin() {
-        Toast.makeText(this, "Please log in to continue.", Toast.LENGTH_SHORT).show();
-        // 这里可以添加跳转到登录页面的逻辑，例如：
-        // Intent loginIntent = new Intent(this, LoginActivity.class);
-        // startActivity(loginIntent);
-        finish();
-    }
+
 }

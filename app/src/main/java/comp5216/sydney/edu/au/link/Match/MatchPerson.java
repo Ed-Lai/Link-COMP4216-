@@ -12,15 +12,24 @@ public class MatchPerson {
     @PropertyName("photo_url")
     private String photoPath;
 
+    @PropertyName("UserID")
+    private String userID;
 
     public MatchPerson() {}
 
-    public MatchPerson(String matchPersonName, String hobby, String photoPath) {
+    public MatchPerson(String matchPersonName, String hobby, String photoPath,String userID) {
         this.matchPersonName = matchPersonName;
         this.hobby = hobby;
         this.photoPath = photoPath;
+        this.userID = userID;
+    }
+    public String getUserID() {
+        return userID;
     }
 
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
     public String getMatchPersonName() {
         return matchPersonName;
     }

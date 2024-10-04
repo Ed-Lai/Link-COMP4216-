@@ -1,8 +1,10 @@
 package comp5216.sydney.edu.au.link.Match;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,27 +29,34 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
     private ListView listView;
     private MatchAdapter adapter;
     private List<MatchPerson> matchPersonList;
-
+    private ImageButton imageButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.match_matches);
 
         listView = findViewById(R.id.match_listView);
-
+        imageButton = findViewById(R.id.match_matches_gobackimageButton);
+        imageButton.setOnClickListener(v -> {
+            // 创建跳转到 MatchMainActivity 的 Intent
+            Intent intent = new Intent(MatchActivity.this, MatchPageActivity.class);
+            startActivity(intent);
+        });
         // Initialize Firebase Firestore
         db = FirebaseFirestore.getInstance();
 
         // Initialize data
         matchPersonList = new ArrayList<>();
-        String currentUserId = getCurrentUserId();
+ //       String currentUserId = getCurrentUserId();
+        String currentUserId = "1";
         adapter = new MatchAdapter(this, matchPersonList, this,currentUserId);  // Pass 'this' for delete listener
         listView.setAdapter(adapter);
 
         // Load data
-        loadMatchData();
+        insertSampleData();
+        loadMRequestData();
 
-//        insertSampleData();
+
     }
     public String getCurrentUserId() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -58,8 +67,8 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
             return null;
         }
     }
-    private void loadMatchData() {
-        CollectionReference matchPersonRef = db.collection("matchpersons");
+    private void loadMRequestData() {
+        CollectionReference matchPersonRef = db.collection("MatchRequests");
 
         matchPersonRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -87,96 +96,11 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
                 });
     }
 
-//    private void saveMatchToFirebase() {
-//        String currentUserId = "currentUserId";
-//        String matchedUserId = "matchedUserId";
-//
-//        // create a match Information
-//        Map<String, Object> matchInfo = new HashMap<>();
-//        matchInfo.put("currentUserId", currentUserId);
-//        matchInfo.put("matchedUserId", matchedUserId);
-//
-//        // Store match Information to  Firestore  "matches" set
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("matches")
-//                .add(matchInfo)
-//                .addOnSuccessListener(documentReference -> {
-//                    Log.d("Firestore", "Match saved successfully.");
-//                })
-//                .addOnFailureListener(e -> {
-//                    Log.e("Firestore", "Error saving match", e);
-//                });
-//    }
-//    private void loadMatchListForUser() {
-//        String currentUserId = "currentUserId";
-//
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        db.collection("matches")
-//                .whereEqualTo("matchedUserId", currentUserId)
-//                .get()
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        for (QueryDocumentSnapshot document : task.getResult()) {
-//                            // get match users Info
-//                            String matchedUserId = document.getString("currentUserId");
-//
-//                            // update in UI
-//                            showMatchedUserInfo(matchedUserId);
-//                        }
-//                    } else {
-//                        Log.e("Firestore", "Error getting documents: ", task.getException());
-//                    }
-//                });
-//    }
-//
-//    private void showMatchedUserInfo(String matchedUserId) {
-//        // show the information of users according to  matchedUserId
-//        TextView matchList = findViewById(R.id.match_start);
-//        matchList.setText("Matched with user ID: " + matchedUserId);
-//    }
-//
-    private void loadMatchRequestsForUser() {
-        String currentUserId = "currentUserId";
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("matchRequests")
-                .whereEqualTo("requestedId", currentUserId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        matchPersonList.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String requestorId = document.getString("requestorId");
-                            // obtain user Info from requestorId
-                            loadMatchPersonData(requestorId);
-                        }
-                    } else {
-                        Log.e("Firestore", "Error getting match requests: ", task.getException());
-                    }
-                });
-    }
-
-    private void loadMatchPersonData(String requestorId) {
-        // get user Info from Firestore and store in the list
-        db.collection("matchpersons").document(requestorId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        MatchPerson person = documentSnapshot.toObject(MatchPerson.class);
-                        matchPersonList.add(person);
-                        adapter.notifyDataSetChanged();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error getting match person data", e);
-                });
-    }
-
-
     private void insertSampleData() {
         // example person
-        MatchPerson person1 = new MatchPerson("John Doe", "Soccer", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg");
-        MatchPerson person2 = new MatchPerson("Jane Smith", "Reading", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg");
-        MatchPerson person3 = new MatchPerson("Emily Johnson", "Music", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg");
+        MatchPerson person1 = new MatchPerson("John Doe", "Soccer", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","1");
+        MatchPerson person2 = new MatchPerson("Jane Smith", "Reading", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","2");
+        MatchPerson person3 = new MatchPerson("Emily Johnson", "Music", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","3");
 
         // insert to  Firebase Firestore 的 "matchpersons"
         db.collection("matchpersons").document(person1.getMatchPersonName()).set(person1);

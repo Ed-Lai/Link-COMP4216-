@@ -47,4 +47,20 @@
         android:text="Match with user to start a conversation"
         tools:layout_editor_absoluteX="92dp"
         tools:layout_editor_absoluteY="499dp" />
+
+    <ImageButton
+        android:id="@+id/rightperson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_slideshow"
+        tools:layout_editor_absoluteX="336dp"
+        tools:layout_editor_absoluteY="252dp" />
+
+    <ImageButton
+        android:id="@+id/leftperson"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_slideshow"
+        tools:layout_editor_absoluteX="28dp"
+        tools:layout_editor_absoluteY="252dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
