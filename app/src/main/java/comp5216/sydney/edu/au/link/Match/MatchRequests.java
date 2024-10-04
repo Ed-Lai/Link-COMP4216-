@@ -1,8 +1,13 @@
 package comp5216.sydney.edu.au.link.Match;
-
+import com.google.firebase.firestore.PropertyName;
 public class MatchRequests {
+    @PropertyName("requesterId")
     private String requesterId;  // 发起请求的用户ID
+
+    @PropertyName("requestedId")
     private String requestedId;  // 被请求的用户ID
+
+    @PropertyName("status")
     private String status;       // 请求状态，例如 "pending", "confirmed"
 
     // 无参构造函数，用于 Firestore 反射
