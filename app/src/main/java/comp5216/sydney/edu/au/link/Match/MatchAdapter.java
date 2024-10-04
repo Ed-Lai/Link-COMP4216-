@@ -35,10 +35,10 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            return convertView;
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.match_listview, parent, false);
         }
-
         MatchPerson item = getItem(position);
+
         ShapeableImageView photo = convertView.findViewById(R.id.match_matches_userphoto);
         TextView name = convertView.findViewById(R.id.match_name);
         Button match = convertView.findViewById(R.id.match_matchButton);
@@ -54,11 +54,13 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         } else {
             photo.setImageResource(R.drawable.default_image);
         }
-        match.setOnClickListener(v -> {
-            // 设置按钮状态为“Matching”
-            match.setText("Matched");
-            // 这里可以添加更多匹配的逻辑，比如回调到 Activity 更新匹配状态
-        });
+
+
+//        match.setOnClickListener(v -> {
+//            // 设置按钮状态为“Matching”
+//            match.setText("Matched");
+//            // 这里可以添加更多匹配的逻辑，比如回调到 Activity 更新匹配状态
+//        });
 
         // Set delete button click listener
         delete.setOnClickListener(v -> {

@@ -50,14 +50,14 @@ public class MatchPageActivity extends AppCompatActivity {
         // 初始化 Firebase Firestore 和当前用户ID
         db = FirebaseFirestore.getInstance();
        // currentUserId = getCurrentUserId();
-        currentUserId = "1";
+        currentUserId = "3";
 
         matchedPersons = new ArrayList<>();
 
         imageButton = findViewById(R.id.match_gobackimageButton);
         imageButton.setOnClickListener(v -> {
             // 创建跳转到 MatchMainActivity 的 Intent
-            Intent intent = new Intent(MatchPageActivity.this, MatchSuccessActivity.class);
+            Intent intent = new Intent(MatchPageActivity.this, MatchActivity.class);
             startActivity(intent);
         });
 
@@ -151,11 +151,13 @@ public class MatchPageActivity extends AppCompatActivity {
 
         // 创建并保存匹配请求到 Firebase
         MatchRequests matchRequest = new MatchRequests(currentUserId, matchedUserId, "pending");
-
+        String documentName = currentUserId +"to"+matchedUserId;
+        System.out.println(documentName);
         db.collection("matchRequests")
-                .add(matchRequest)  // 将MatchRequests对象直接添加到Firestore
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Firestore", "Match request saved successfully.");
+                .document(documentName)  // 使用自定义文档名称
+                .set(matchRequest)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("Firestore", "Match request saved successfully with document name: " + documentName);
                     Toast.makeText(MatchPageActivity.this, "Match request sent!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
