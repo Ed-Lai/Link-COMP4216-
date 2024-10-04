@@ -74,14 +74,6 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
                     Log.e("FirestoreDelete", "Error deleting document: " + person.getMatchPersonName(), e);
                 });
     }
-//    Button matchButton = findViewById(R.id.match_matchButton);
-//    matchButton.setOnClickListener(v -> {
-//        // 改变按钮的文字为 "Matching"
-//        matchButton.setText("Matching");
-//
-//        // 将匹配信息存储到 Firebase
-//        saveMatchToFirebase();
-//    });
 
     private void saveMatchToFirebase() {
         // 假设当前用户和匹配的用户都有唯一的ID
