@@ -23,7 +23,7 @@ import java.util.List;
 
 import comp5216.sydney.edu.au.link.R;
 
-public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnDeleteRequestListener {
+public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnDeleteRequestListener,MatchAdapter.OnMatchRequestListener {
     private FirebaseFirestore db;
     private ListView listView;
     private MatchAdapter adapter;
@@ -50,7 +50,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
         currentUserId = "1";
 
 
-        adapter = new MatchAdapter(this, matchPersonList, this);
+        adapter = new MatchAdapter(this, matchPersonList, this,this);
         listView.setAdapter(adapter);
 
         // Load data
@@ -122,7 +122,6 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
     @Override
     public void onDeleteRequest(MatchPerson person) {
         String documentName = person.getUserID()+"to"+currentUserId;
-        System.out.println(documentName);
             db.collection("matchRequests").document(documentName)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
@@ -172,4 +171,17 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
                 );
     }
 
+    @Override
+    public void onMatchRequest(MatchPerson person) {
+        String documentName = person.getUserID()+"to"+currentUserId;
+        db.collection("matchRequests").document(documentName)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    matchPersonList.remove(person);
+                    adapter.notifyDataSetChanged();
+                    Toast.makeText(this, "Match request approved", Toast.LENGTH_SHORT).show();
+
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error deleting match request", e));
+    }
 }
