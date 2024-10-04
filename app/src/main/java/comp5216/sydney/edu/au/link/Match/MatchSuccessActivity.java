@@ -38,15 +38,15 @@ public class MatchSuccessActivity extends AppCompatActivity {
         matchSuccessListView.setAdapter(matchAdapter);
 
         // get userID
-        String userAId = getIntent().getStringExtra("userAId");
-        String userBId = getIntent().getStringExtra("userBId");
+        String currentUserId = getIntent().getStringExtra("requesterId");
+        String matchedUserId = getIntent().getStringExtra("requestedId");
 
         // add matched person information to the list
-        matchedUserList.add(userAId);
-        matchedUserList.add(userBId);
+        matchedUserList.add(currentUserId);
+        matchedUserList.add(matchedUserId);
 
         // from Firebase load matched person
-        loadAllMatchesForCurrentUser(userAId);
+        loadAllMatchesForCurrentUser(currentUserId);
 
         // update UI
         matchAdapter.notifyDataSetChanged();
@@ -54,12 +54,12 @@ public class MatchSuccessActivity extends AppCompatActivity {
 
     private void loadAllMatchesForCurrentUser(String currentUserId) {
         db.collection("matches")
-                .whereEqualTo("userAId", currentUserId)
+                .whereEqualTo("currentUserId", currentUserId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String matchedUser = document.getString("userBId");
+                            String matchedUser = document.getString("matchedUserId");
                             if (!matchedUserList.contains(matchedUser)) {
                                 matchedUserList.add(matchedUser);
                             }

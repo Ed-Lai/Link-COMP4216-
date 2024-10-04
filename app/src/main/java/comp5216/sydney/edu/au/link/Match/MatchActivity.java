@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -85,54 +87,54 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
                 });
     }
 
-    private void saveMatchToFirebase() {
-        String currentUserId = "currentUserId";
-        String matchedUserId = "matchedUserId";
-
-        // create a match Information
-        Map<String, Object> matchInfo = new HashMap<>();
-        matchInfo.put("currentUserId", currentUserId);
-        matchInfo.put("matchedUserId", matchedUserId);
-
-        // Store match Information to  Firestore  "matches" set
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("matches")
-                .add(matchInfo)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Firestore", "Match saved successfully.");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error saving match", e);
-                });
-    }
-    private void loadMatchListForUser() {
-        String currentUserId = "currentUserId";
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("matches")
-                .whereEqualTo("matchedUserId", currentUserId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            // get match users Info
-                            String matchedUserId = document.getString("currentUserId");
-
-                            // update in UI
-                            showMatchedUserInfo(matchedUserId);
-                        }
-                    } else {
-                        Log.e("Firestore", "Error getting documents: ", task.getException());
-                    }
-                });
-    }
-
-    private void showMatchedUserInfo(String matchedUserId) {
-        // show the information of users according to  matchedUserId
-        TextView matchList = findViewById(R.id.match_start);
-        matchList.setText("Matched with user ID: " + matchedUserId);
-    }
-
+//    private void saveMatchToFirebase() {
+//        String currentUserId = "currentUserId";
+//        String matchedUserId = "matchedUserId";
+//
+//        // create a match Information
+//        Map<String, Object> matchInfo = new HashMap<>();
+//        matchInfo.put("currentUserId", currentUserId);
+//        matchInfo.put("matchedUserId", matchedUserId);
+//
+//        // Store match Information to  Firestore  "matches" set
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("matches")
+//                .add(matchInfo)
+//                .addOnSuccessListener(documentReference -> {
+//                    Log.d("Firestore", "Match saved successfully.");
+//                })
+//                .addOnFailureListener(e -> {
+//                    Log.e("Firestore", "Error saving match", e);
+//                });
+//    }
+//    private void loadMatchListForUser() {
+//        String currentUserId = "currentUserId";
+//
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        db.collection("matches")
+//                .whereEqualTo("matchedUserId", currentUserId)
+//                .get()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        for (QueryDocumentSnapshot document : task.getResult()) {
+//                            // get match users Info
+//                            String matchedUserId = document.getString("currentUserId");
+//
+//                            // update in UI
+//                            showMatchedUserInfo(matchedUserId);
+//                        }
+//                    } else {
+//                        Log.e("Firestore", "Error getting documents: ", task.getException());
+//                    }
+//                });
+//    }
+//
+//    private void showMatchedUserInfo(String matchedUserId) {
+//        // show the information of users according to  matchedUserId
+//        TextView matchList = findViewById(R.id.match_start);
+//        matchList.setText("Matched with user ID: " + matchedUserId);
+//    }
+//
     private void loadMatchRequestsForUser() {
         String currentUserId = "currentUserId";
 

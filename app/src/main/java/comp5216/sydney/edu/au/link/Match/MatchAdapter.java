@@ -54,15 +54,16 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         } else {
             photo.setImageResource(R.drawable.default_image);
         }
+
         match.setOnClickListener(v -> {
             // 设置按钮状态为“Matching”
-            match.setText("Matching");
+            match.setText("Matched");
 
             // 保存匹配请求到Firebase
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             Map<String, Object> matchRequest = new HashMap<>();
-            matchRequest.put("requestorId", currentUserId);
-            matchRequest.put("requestedId", item.getMatchPersonName());
+            matchRequest.put("currentUserId", currentUserId);
+            matchRequest.put("matchedUserId", item.getMatchPersonName());
 
             db.collection("matchRequests")
                     .add(matchRequest)
