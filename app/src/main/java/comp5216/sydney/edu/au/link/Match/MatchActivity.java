@@ -72,6 +72,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
         CollectionReference matchPersonRef = db.collection("matchRequests");
 
         matchPersonRef.whereEqualTo("requestedId", currentUserId)
+                .whereEqualTo("status","pending")
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Firestore", "Data fetched successfully");
@@ -133,6 +134,20 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
     }
 
 
+
+    @Override
+    public void onMatchRequest(MatchPerson person) {
+        String documentName = person.getUserID() + "to" + currentUserId;
+        db.collection("matchRequests").document(documentName)
+                .update("status", "finish")
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Match request approved", Toast.LENGTH_SHORT).show();
+                    matchPersonList.remove(person);
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error updating match request status", e));
+    }
+
     private void insertSampleData() {
         // example person
         MatchPerson person1 = new MatchPerson("John Doe", "Music", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","1");
@@ -171,17 +186,4 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
                 );
     }
 
-    @Override
-    public void onMatchRequest(MatchPerson person) {
-        String documentName = person.getUserID()+"to"+currentUserId;
-        db.collection("matchRequests").document(documentName)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    matchPersonList.remove(person);
-                    adapter.notifyDataSetChanged();
-                    Toast.makeText(this, "Match request approved", Toast.LENGTH_SHORT).show();
-
-                })
-                .addOnFailureListener(e -> Log.e("Firestore", "Error deleting match request", e));
-    }
 }

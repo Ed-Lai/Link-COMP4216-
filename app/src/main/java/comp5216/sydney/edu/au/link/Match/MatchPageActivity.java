@@ -57,7 +57,7 @@ public class MatchPageActivity extends AppCompatActivity {
         imageButton = findViewById(R.id.match_gobackimageButton);
         imageButton.setOnClickListener(v -> {
             // 创建跳转到 MatchMainActivity 的 Intent
-            Intent intent = new Intent(MatchPageActivity.this, MatchActivity.class);
+            Intent intent = new Intent(MatchPageActivity.this, MatchSuccessActivity.class);
             startActivity(intent);
         });
 

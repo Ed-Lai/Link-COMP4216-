@@ -7,6 +7,14 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <ImageButton
+        android:id="@+id/match_success_gobackimageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="?attr/actionModeCloseDrawable"
+        tools:layout_editor_absoluteX="18dp"
+        tools:layout_editor_absoluteY="13dp" />
+
     <TextView
         android:id="@+id/matched_users_info"
         android:layout_width="wrap_content"
