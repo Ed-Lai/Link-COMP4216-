@@ -1,6 +1,7 @@
 package comp5216.sydney.edu.au.link.Match;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,20 +11,24 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import comp5216.sydney.edu.au.link.R;
 
 public class MatchAdapter extends ArrayAdapter<MatchPerson> {
     private List<MatchPerson> matchPersonList;
     private OnPersonDeletedListener listener;
-
+    private String currentUserId;
     // for delete listener
-    public MatchAdapter(Context context, List<MatchPerson> items, OnPersonDeletedListener listener) {
+    public MatchAdapter(Context context, List<MatchPerson> items, OnPersonDeletedListener listener,String currentUserId) {
         super(context, 0, items);
         this.matchPersonList = items;
         this.listener = listener;
+        this.currentUserId = currentUserId;
     }
 
     @Override
@@ -49,7 +54,27 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         } else {
             photo.setImageResource(R.drawable.default_image);
         }
+        match.setOnClickListener(v -> {
+            // 设置按钮状态为“Matching”
+            match.setText("Matching");
 
+            // 保存匹配请求到Firebase
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Map<String, Object> matchRequest = new HashMap<>();
+            matchRequest.put("requestorId", currentUserId);
+            matchRequest.put("requestedId", item.getMatchPersonName());
+
+            db.collection("matchRequests")
+                    .add(matchRequest)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d("Firestore", "Match request saved successfully.");
+
+                        // 更新UI或其他逻辑
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Error saving match request", e);
+                    });
+        });
         // Set delete button click listener
         delete.setOnClickListener(v -> {
             // delete current
@@ -66,6 +91,7 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
 
         return convertView;
     }
+
 
     // interface used to matchActivity
     public interface OnPersonDeletedListener {

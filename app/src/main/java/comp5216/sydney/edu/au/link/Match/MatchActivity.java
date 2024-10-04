@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -37,7 +38,8 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
 
         // Initialize data
         matchPersonList = new ArrayList<>();
-        adapter = new MatchAdapter(this, matchPersonList, this);  // Pass 'this' for delete listener
+        String currentUserId = getCurrentUserId();
+        adapter = new MatchAdapter(this, matchPersonList, this,currentUserId);  // Pass 'this' for delete listener
         listView.setAdapter(adapter);
 
         // Load data
@@ -45,7 +47,15 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
 
 //        insertSampleData();
     }
-
+    public String getCurrentUserId() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            return currentUser.getUid();
+        } else {
+            Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
     private void loadMatchData() {
         CollectionReference matchPersonRef = db.collection("matchpersons");
 
@@ -76,16 +86,15 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
     }
 
     private void saveMatchToFirebase() {
-        // 假设当前用户和匹配的用户都有唯一的ID
         String currentUserId = "currentUserId";
-        String matchedUserId = "matchedUserId";  // 匹配的用户的ID
+        String matchedUserId = "matchedUserId";
 
-        // 创建一个匹配信息
+        // create a match Information
         Map<String, Object> matchInfo = new HashMap<>();
         matchInfo.put("currentUserId", currentUserId);
         matchInfo.put("matchedUserId", matchedUserId);
 
-        // 将匹配信息保存到 Firestore 的 "matches" 集合
+        // Store match Information to  Firestore  "matches" set
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("matches")
                 .add(matchInfo)
@@ -97,7 +106,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
                 });
     }
     private void loadMatchListForUser() {
-        String currentUserId = "currentUserId";  // 当前用户的ID
+        String currentUserId = "currentUserId";
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("matches")
@@ -106,10 +115,10 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            // 获取匹配用户信息
+                            // get match users Info
                             String matchedUserId = document.getString("currentUserId");
 
-                            // 在UI上显示匹配信息
+                            // update in UI
                             showMatchedUserInfo(matchedUserId);
                         }
                     } else {
@@ -119,10 +128,47 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
     }
 
     private void showMatchedUserInfo(String matchedUserId) {
-        // 根据 matchedUserId 显示匹配用户的信息
+        // show the information of users according to  matchedUserId
         TextView matchList = findViewById(R.id.match_start);
         matchList.setText("Matched with user ID: " + matchedUserId);
     }
+
+    private void loadMatchRequestsForUser() {
+        String currentUserId = "currentUserId";
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("matchRequests")
+                .whereEqualTo("requestedId", currentUserId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        matchPersonList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String requestorId = document.getString("requestorId");
+                            // obtain user Info from requestorId
+                            loadMatchPersonData(requestorId);
+                        }
+                    } else {
+                        Log.e("Firestore", "Error getting match requests: ", task.getException());
+                    }
+                });
+    }
+
+    private void loadMatchPersonData(String requestorId) {
+        // get user Info from Firestore and store in the list
+        db.collection("matchpersons").document(requestorId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        MatchPerson person = documentSnapshot.toObject(MatchPerson.class);
+                        matchPersonList.add(person);
+                        adapter.notifyDataSetChanged();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error getting match person data", e);
+                });
+    }
+
 
     private void insertSampleData() {
         // example person
@@ -130,7 +176,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
         MatchPerson person2 = new MatchPerson("Jane Smith", "Reading", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg");
         MatchPerson person3 = new MatchPerson("Emily Johnson", "Music", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg");
 
-        // insert to  Firebase Firestore 的 "matchpersons" 集合
+        // insert to  Firebase Firestore 的 "matchpersons"
         db.collection("matchpersons").document(person1.getMatchPersonName()).set(person1);
         db.collection("matchpersons").document(person2.getMatchPersonName()).set(person2);
         db.collection("matchpersons").document(person3.getMatchPersonName()).set(person3)
