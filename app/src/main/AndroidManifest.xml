@@ -24,6 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Match.MatchPageActivity" />
+        <activity android:name=".Match.MatchSuccessActivity" />
     </application>
 
 </manifest>

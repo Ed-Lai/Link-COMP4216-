@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class MatchPageActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String currentUserId;
     private String matchedUserId;
-
+    private ImageButton imageButton;
 
     private List<MatchPerson> matchedPersons; // 用户数据列表
     private int currentIndex = 0; // 当前显示用户的索引
@@ -51,55 +52,34 @@ public class MatchPageActivity extends AppCompatActivity {
        // currentUserId = getCurrentUserId();
         currentUserId = "1";
 
+        matchedPersons = new ArrayList<>();
 
-        // 获取 Intent 中传递的匹配用户ID
-        matchedUserId = getIntent().getStringExtra("UserID");
-        if (matchedUserId == null) {
-            Toast.makeText(this, "Error: No matched user provided.", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+        imageButton = findViewById(R.id.match_gobackimageButton);
+        imageButton.setOnClickListener(v -> {
+            // 创建跳转到 MatchMainActivity 的 Intent
+            Intent intent = new Intent(MatchPageActivity.this, MatchSuccessActivity.class);
+            startActivity(intent);
+        });
 
         // 初始化 UI 组件
         matchName = findViewById(R.id.match_name);
         matchStart = findViewById(R.id.match_start);
         matchUserPhoto = findViewById(R.id.match_userphoto);
         matchButton = findViewById(R.id.match_matchButton);
-        goBackButton = findViewById(R.id.match_gobackimageButton);
-
+        rightPersonButton = findViewById(R.id.rightperson);
+        leftPersonButton = findViewById(R.id.leftperson);
         // 设置匹配用户信息
         loadMatchedUsers();
 
         rightPersonButton.setOnClickListener(v -> showNextPerson());
         leftPersonButton.setOnClickListener(v -> showPreviousPerson());
         // 设置匹配按钮点击事件
-        matchButton.setOnClickListener(v -> {
-            // 设置按钮状态为“Matching”
-            matchButton.setText("Matching");
+        matchButton.setOnClickListener(v -> sendMatchRequest());
 
-            // 保存匹配请求到 Firebase
-            Map<String, Object> matchRequest = new HashMap<>();
-            matchRequest.put("currentUserId", currentUserId);
-            matchRequest.put("matchedUserId", matchedUserId);
 
-            db.collection("matchRequests")
-                    .add(matchRequest)
-                    .addOnSuccessListener(documentReference -> {
-                        Log.d("Firestore", "Match request saved successfully.");
-                        Toast.makeText(MatchPageActivity.this, "Match request sent!", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Firestore", "Error saving match request", e);
-                        Toast.makeText(MatchPageActivity.this, "Error sending match request.", Toast.LENGTH_SHORT).show();
-                    });
-        });
-
-        // 设置返回按钮点击事件
-        goBackButton.setOnClickListener(v -> onBackPressed());
     }
 
     private void loadMatchedUsers() {
-        String currentUserId = getCurrentUserId();
         db.collection("matchpersons")
                 .whereNotEqualTo("userID", currentUserId) // 不包括当前用户
                 .get()
@@ -142,6 +122,7 @@ public class MatchPageActivity extends AppCompatActivity {
     // 根据索引显示用户信息
     private void showPersonAtIndex(int index) {
         MatchPerson person = matchedPersons.get(index);
+        matchedUserId = person.getUserID();
         matchName.setText(person.getMatchPersonName());
 
         // 使用 Glide 加载用户图片
@@ -158,6 +139,29 @@ public class MatchPageActivity extends AppCompatActivity {
         } else {
             return null;
         }
+    }
+    private void sendMatchRequest() {
+        if (matchedUserId == null) {
+            Toast.makeText(this, "No user selected.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 设置按钮状态为“Matching”
+        matchButton.setText("Matching");
+
+        // 创建并保存匹配请求到 Firebase
+        MatchRequests matchRequest = new MatchRequests(currentUserId, matchedUserId, "pending");
+
+        db.collection("matchRequests")
+                .add(matchRequest)  // 将MatchRequests对象直接添加到Firestore
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("Firestore", "Match request saved successfully.");
+                    Toast.makeText(MatchPageActivity.this, "Match request sent!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error saving match request", e);
+                    Toast.makeText(MatchPageActivity.this, "Error sending match request.", Toast.LENGTH_SHORT).show();
+                });
     }
 
 

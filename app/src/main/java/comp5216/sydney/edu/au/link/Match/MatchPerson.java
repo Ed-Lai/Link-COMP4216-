@@ -15,6 +15,8 @@ public class MatchPerson {
     @PropertyName("UserID")
     private String userID;
 
+    @PropertyName("matchRequestId")
+    private String matchRequestId;
     public MatchPerson() {}
 
     public MatchPerson(String matchPersonName, String hobby, String photoPath,String userID) {
@@ -26,7 +28,13 @@ public class MatchPerson {
     public String getUserID() {
         return userID;
     }
+    public String getMatchRequestId() {
+        return matchRequestId;
+    }
 
+    public void setMatchRequestId(String matchRequestId) {
+        this.matchRequestId = matchRequestId;
+    }
     public void setUserID(String userID) {
         this.userID = userID;
     }

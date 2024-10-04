@@ -21,24 +21,24 @@ import comp5216.sydney.edu.au.link.R;
 
 public class MatchAdapter extends ArrayAdapter<MatchPerson> {
     private List<MatchPerson> matchPersonList;
-    private OnPersonDeletedListener listener;
-    private String currentUserId;
+    private OnDeleteRequestListener deleteRequestListener;
+
+
+
     // for delete listener
-    public MatchAdapter(Context context, List<MatchPerson> items, OnPersonDeletedListener listener,String currentUserId) {
+    public MatchAdapter(Context context, List<MatchPerson> items, OnDeleteRequestListener listener) {
         super(context, 0, items);
         this.matchPersonList = items;
-        this.listener = listener;
-        this.currentUserId = currentUserId;
+        this.deleteRequestListener = listener;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.match_listview, parent, false);
+            return convertView;
         }
 
         MatchPerson item = getItem(position);
-
         ShapeableImageView photo = convertView.findViewById(R.id.match_matches_userphoto);
         TextView name = convertView.findViewById(R.id.match_name);
         Button match = convertView.findViewById(R.id.match_matchButton);
@@ -57,44 +57,26 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         match.setOnClickListener(v -> {
             // 设置按钮状态为“Matching”
             match.setText("Matched");
-
-            // 保存匹配请求到Firebase
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            Map<String, Object> matchRequest = new HashMap<>();
-            matchRequest.put("currentUserId", currentUserId);
-            matchRequest.put("matchedUserId", item.getMatchPersonName());
-
-            db.collection("matchRequests")
-                    .add(matchRequest)
-                    .addOnSuccessListener(documentReference -> {
-                        Log.d("Firestore", "Match request saved successfully.");
-
-                        // 更新UI或其他逻辑
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("Firestore", "Error saving match request", e);
-                    });
+            // 这里可以添加更多匹配的逻辑，比如回调到 Activity 更新匹配状态
         });
+
         // Set delete button click listener
         delete.setOnClickListener(v -> {
-            // delete current
-            matchPersonList.remove(position);
-
-            // update data
-            notifyDataSetChanged();
-
-            // delete  Firebase data
-            if (listener != null) {
-                listener.onPersonDeleted(item);
+            if (deleteRequestListener != null) {
+                deleteRequestListener.onDeleteRequest(item);
             }
         });
+
+
 
         return convertView;
     }
 
+// MatchAdapter 中
 
-    // interface used to matchActivity
-    public interface OnPersonDeletedListener {
-        void onPersonDeleted(MatchPerson person);
+
+    public interface OnDeleteRequestListener {
+        void onDeleteRequest(MatchPerson person);
     }
+
 }

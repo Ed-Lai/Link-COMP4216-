@@ -23,33 +23,35 @@ import java.util.List;
 
 import comp5216.sydney.edu.au.link.R;
 
-public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnPersonDeletedListener {
-
+public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnDeleteRequestListener {
+    private Map<MatchPerson, MatchRequests> matchRequestMap; // 用于匹配 MatchPerson 和 matchRequestId 的映射
     private FirebaseFirestore db;
     private ListView listView;
     private MatchAdapter adapter;
     private List<MatchPerson> matchPersonList;
     private ImageButton imageButton;
+    private String currentUserId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.match_matches);
 
+        db = FirebaseFirestore.getInstance();
+        matchPersonList = new ArrayList<>();
+        matchRequestMap = new HashMap<>();
+
         listView = findViewById(R.id.match_listView);
         imageButton = findViewById(R.id.match_matches_gobackimageButton);
         imageButton.setOnClickListener(v -> {
-            // 创建跳转到 MatchMainActivity 的 Intent
             Intent intent = new Intent(MatchActivity.this, MatchPageActivity.class);
             startActivity(intent);
         });
-        // Initialize Firebase Firestore
-        db = FirebaseFirestore.getInstance();
 
-        // Initialize data
-        matchPersonList = new ArrayList<>();
  //       String currentUserId = getCurrentUserId();
-        String currentUserId = "1";
-        adapter = new MatchAdapter(this, matchPersonList, this,currentUserId);  // Pass 'this' for delete listener
+        currentUserId = "1";
+
+
+        adapter = new MatchAdapter(this, matchPersonList, this);
         listView.setAdapter(adapter);
 
         // Load data
@@ -68,44 +70,87 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnP
         }
     }
     private void loadMRequestData() {
-        CollectionReference matchPersonRef = db.collection("MatchRequests");
+        CollectionReference matchPersonRef = db.collection("matchRequests");
 
-        matchPersonRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                matchPersonList.clear();
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    MatchPerson person = document.toObject(MatchPerson.class);
-                    matchPersonList.add(person);
-                }
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
+        matchPersonRef.whereEqualTo("requestedId", currentUserId)
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Firestore", "Data fetched successfully");
+                        matchPersonList.clear();
+                        matchRequestMap.clear();
+                        QuerySnapshot result = task.getResult();
 
-    @Override
-    public void onPersonDeleted(MatchPerson person) {
-        // Handle deletion of MatchPerson from Firestore or local list
-        db.collection("matchpersons").document(person.getMatchPersonName())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-
-                    Log.d("FirestoreDelete", "Successfully deleted document: " + person.getMatchPersonName());
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("FirestoreDelete", "Error deleting document: " + person.getMatchPersonName(), e);
+                        if (result.isEmpty()) {
+                            Log.d("Firestore", "No documents found in MatchRequests");
+                        } else {
+                            for (QueryDocumentSnapshot document : result) {
+                                MatchRequests matchRequest = document.toObject(MatchRequests.class);
+                                if (matchRequest.getRequestedId() != null) {
+                                    loadMatchPersonDetails(matchRequest.getRequesterId());
+                                }
+                            }
+                            // 确保所有数据加载完成后再刷新适配器
+                            adapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        Log.e("Firestore", "Error fetching data", task.getException());
+                    }
                 });
     }
 
+
+
+    private void loadMatchPersonDetails(String requesterID) {
+        db.collection("matchpersons")
+                .whereEqualTo("userID", requesterID) // 假设 "userId" 是字段名
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        for (QueryDocumentSnapshot document : querySnapshot) {
+                            MatchPerson person = document.toObject(MatchPerson.class);
+                            matchPersonList.add(person); // 添加到显示列表
+                            adapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        Log.e("MatchActivity", "No MatchPerson document found for requesterId: " + requesterID);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching MatchPerson details", e));
+    }
+
+
+
+    // 删除匹配请求
+    @Override
+    public void onDeleteRequest(MatchPerson person) {
+        MatchRequests requests = matchRequestMap.get(person);
+        if (requests != null) {
+            db.collection("matchRequests").document(requests.getRequestedId())
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        matchPersonList.remove(person);
+                        matchRequestMap.remove(person);
+                        adapter.notifyDataSetChanged();
+                        Toast.makeText(this, "Match request deleted", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> Log.e("Firestore", "Error deleting match request", e));
+        } else {
+            Log.e("MatchActivity", "No matchRequestId found for person: " + person.getMatchPersonName());
+        }
+    }
+
+
     private void insertSampleData() {
         // example person
-        MatchPerson person1 = new MatchPerson("John Doe", "Soccer", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","1");
-        MatchPerson person2 = new MatchPerson("Jane Smith", "Reading", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","2");
+        MatchPerson person1 = new MatchPerson("John Doe", "Music", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","1");
+        MatchPerson person2 = new MatchPerson("Jane Smith", "Music", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","2");
         MatchPerson person3 = new MatchPerson("Emily Johnson", "Music", "https://cdn.pixabay.com/photo/2024/03/09/16/59/typewriter-8622984_1280.jpg","3");
-
+        MatchRequests request1 = new MatchRequests("2","1","pending");
         // insert to  Firebase Firestore 的 "matchpersons"
         db.collection("matchpersons").document(person1.getMatchPersonName()).set(person1);
         db.collection("matchpersons").document(person2.getMatchPersonName()).set(person2);
-        db.collection("matchpersons").document(person3.getMatchPersonName()).set(person3)
+        db.collection("matchpersons").document(person3.getMatchPersonName()).set(person3);
+        db.collection("matchRequests").document(request1.getRequestedId()).set(request1)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "Sample data inserted successfully.");
                 })
