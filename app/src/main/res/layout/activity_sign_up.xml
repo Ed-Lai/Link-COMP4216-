@@ -65,7 +65,8 @@
         android:layout_marginStart="150dp"
         android:layout_marginTop="230dp"
 
-        android:text="myname@gmail.com"
+        android:hint="myname@gmail.com"
+        android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
@@ -89,7 +90,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="150dp"
         android:layout_below="@id/input_email"
-        android:text="Your_User_name"
+        android:hint="Your_User_name"
+        android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
@@ -113,7 +115,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="150dp"
         android:layout_below="@id/input_username"
-        android:text="******************"
+        android:hint="******************"
+        android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
@@ -137,7 +140,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/input_password"
         android:layout_marginStart="150dp"
-        android:text="First Last"
+        android:hint="First Last"
+        android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
@@ -161,7 +165,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/input_name"
         android:layout_marginStart="150dp"
-        android:text="Male/Female"
+        android:hint="Male/Female"
+        android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
