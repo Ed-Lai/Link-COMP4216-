@@ -1,6 +1,7 @@
 package comp5216.sydney.edu.au.link;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -39,6 +40,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient fusedLocationProviderClient;
     private PlacesClient placesClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
+    private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_main);
 
         // Initialize the Places API
-        Places.initialize(getApplicationContext(), "AIzaSyBbShZTP0Y1lqvik4h5weeJyQJRf9Dv7NM");
+        Places.initialize(getApplicationContext(), "YOUR KEY");
+
         placesClient = Places.createClient(this);
 
         // Get the map fragment and set up the callback for when the map is ready
@@ -56,7 +59,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Set up Fused Location Provider to get user's location
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
+        fetchLocation();
         // Request location permissions if not already granted
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
@@ -66,11 +69,31 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
+    private void fetchLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
+
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @SuppressLint("MissingPermission")
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    currentLocation = location;
+                    LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    mMap.setMyLocationEnabled(true);
+                }
+            }
+        });
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
+        fetchLocation();
         // Get user's current location and update the map
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -139,7 +162,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void fetchNearbyPlaces(Location location) {
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ID); // Add Place ID field
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ID, Place.Field.TYPES); // Add Place.TYPES field
         FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -149,14 +172,17 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     LatLng placeLatLng = place.getLatLng();
                     String placeId = place.getId(); // Get place ID
 
-                    if (placeLatLng != null) {
-                        // Add marker with place ID as tag
-                        Marker marker = mMap.addMarker(new MarkerOptions()
-                                .position(placeLatLng)
-                                .title(place.getName()));
+                    // Filter only bars and night clubs
+                    if (place.getTypes().contains(Place.Type.BAR) || place.getTypes().contains(Place.Type.NIGHT_CLUB)) {
+                        if (placeLatLng != null) {
+                            // Add marker with place ID as tag
+                            Marker marker = mMap.addMarker(new MarkerOptions()
+                                    .position(placeLatLng)
+                                    .title(place.getName()));
 
-                        // Store placeId in marker's tag
-                        marker.setTag(placeId);
+                            // Store placeId in marker's tag
+                            marker.setTag(placeId);
+                        }
                     }
                 }
             }).addOnFailureListener((exception) -> {
