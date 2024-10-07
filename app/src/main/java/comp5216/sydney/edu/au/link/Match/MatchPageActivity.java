@@ -49,8 +49,8 @@ public class MatchPageActivity extends AppCompatActivity {
 
         // 初始化 Firebase Firestore 和当前用户ID
         db = FirebaseFirestore.getInstance();
-       // currentUserId = getCurrentUserId();
-        currentUserId = "3";
+        currentUserId = getCurrentUserId();
+        //currentUserId = "3";
 
         matchedPersons = new ArrayList<>();
 
