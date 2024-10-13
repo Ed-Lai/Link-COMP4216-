@@ -26,9 +26,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- AccountPage activity declaration -->
+        <activity
+            android:name=".AccountPage"
+            android:exported="true"
+            android:theme="@style/Theme.Link" />
+
+        <!-- EditProfilePage activity declaration -->
+        <activity
+            android:name=".EditProfilePage"
+            android:exported="true"
+            android:theme="@style/Theme.Link" />
+
         <activity android:name=".landing.LoginActivity"></activity>
         <activity android:name=".landing.SignUpActivity"></activity>
         <activity android:name=".VenueDetailActivity" />
+
     </application>
 
 </manifest>

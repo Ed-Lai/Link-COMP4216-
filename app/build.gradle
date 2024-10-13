@@ -52,6 +52,8 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:33.2.0')
@@ -59,3 +61,4 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 
 }
+

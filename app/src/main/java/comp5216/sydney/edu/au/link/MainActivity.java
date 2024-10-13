@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -168,6 +169,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+
+    public void loadProfile(View view){
+        Intent intent = new Intent(MainActivity.this, AccountPage.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+
     private String formatOpeningHours(OpeningHours openingHours) {
         if (openingHours == null || openingHours.getWeekdayText() == null) {
             return "No opening hours available";
@@ -207,6 +220,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(MainActivity.this, "Failed to get places: " + exception.getMessage(), Toast.LENGTH_LONG).show();
             });
         }
+
     }
 
     @Override
@@ -240,4 +254,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         CollectionReference testCollection = firestore.collection("testCollection");
         testCollection.add(testData);
     }
+
+
+
 }
