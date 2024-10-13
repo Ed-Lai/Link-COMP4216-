@@ -11,14 +11,15 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 import java.util.List;
 import comp5216.sydney.edu.au.link.R;
+import comp5216.sydney.edu.au.link.UserProfile;
 
-public class MatchAdapter extends ArrayAdapter<MatchPerson> {
-    private List<MatchPerson> matchPersonList;
+public class MatchAdapter extends ArrayAdapter<UserProfile> {
+    private List<UserProfile> matchPersonList;
     private OnDeleteRequestListener deleteRequestListener;
     private OnMatchRequestListener matchRequestListener;
 
     // Modify constructor to accept OnMatchRequestListener
-    public MatchAdapter(Context context, List<MatchPerson> items, OnDeleteRequestListener deleteListener, OnMatchRequestListener matchListener) {
+    public MatchAdapter(Context context, List<UserProfile> items, OnDeleteRequestListener deleteListener, OnMatchRequestListener matchListener) {
         super(context, 0, items);
         this.matchPersonList = items;
         this.deleteRequestListener = deleteListener;
@@ -30,7 +31,7 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.match_listview, parent, false);
         }
-        MatchPerson item = getItem(position);
+        UserProfile item = getItem(position);
 
         ShapeableImageView photo = convertView.findViewById(R.id.match_matches_userphoto);
         TextView name = convertView.findViewById(R.id.match_name);
@@ -38,10 +39,10 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
         Button delete = convertView.findViewById(R.id.match_list_deleteButton);
 
         // Set name
-        name.setText(item.getMatchPersonName());
+        name.setText(item.getName());
 
         // Use Glide to load image
-        String photoPath = item.getPhotoPath();
+        String photoPath = item.getProfilePictureUrl();
         if (photoPath != null && !photoPath.isEmpty()) {
             Glide.with(getContext()).load(photoPath).into(photo);
         } else {
@@ -67,10 +68,10 @@ public class MatchAdapter extends ArrayAdapter<MatchPerson> {
 
     // Listener interfaces
     public interface OnDeleteRequestListener {
-        void onDeleteRequest(MatchPerson person);
+        void onDeleteRequest(UserProfile person);
     }
 
     public interface OnMatchRequestListener {
-        void onMatchRequest(MatchPerson person);
+        void onMatchRequest(UserProfile person);
     }
 }

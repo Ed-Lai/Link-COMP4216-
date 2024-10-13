@@ -28,7 +28,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
     private FirebaseFirestore db;
     private ListView listView;
     private MatchAdapter adapter;
-    private List<MatchPerson> matchPersonList;
+    private List<UserProfile> matchPersonList;
     private ImageButton imageButton;
     private String currentUserId;
     @Override
@@ -101,7 +101,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
 
 
 
-    private void loadMatchPersonDetails(String requesterID) {
+    /*private void loadMatchPersonDetails(String requesterID) {
         db.collection("matchpersons")
                 .whereEqualTo("userID", requesterID) // 假设 "userId" 是字段名
                 .get()
@@ -117,14 +117,33 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
                     }
                 })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error fetching MatchPerson details", e));
+    }*/
+
+    private void loadMatchPersonDetails(String requesterID) {
+        db.collection("matchpersons")
+                .whereEqualTo("userID", requesterID) // 假设 "userId" 是字段名
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        for (QueryDocumentSnapshot document : querySnapshot) {
+                            UserProfile person = document.toObject(UserProfile.class);
+                            matchPersonList.add(person); // 添加到显示列表
+                            adapter.notifyDataSetChanged();
+                        }
+                    } else {
+                        Log.e("MatchActivity", "No UserProfile document found for requesterId: " + requesterID);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching UserProfile details", e));
     }
+
 
 
 
     // 删除匹配请求
     @Override
-    public void onDeleteRequest(MatchPerson person) {
-        String documentName = person.getUserID()+"to"+currentUserId;
+    public void onDeleteRequest(UserProfile person) {
+        String documentName = person.getUserId()+"to"+currentUserId;
             db.collection("matchRequests").document(documentName)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
@@ -138,8 +157,8 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
 
 
     @Override
-    public void onMatchRequest(MatchPerson person) {
-        String documentName = person.getUserID() + "to" + currentUserId;
+    public void onMatchRequest(UserProfile person) {
+        String documentName = person.getUserId() + "to" + currentUserId;
         db.collection("matchRequests").document(documentName)
                 .update("status", "finish")
                 .addOnSuccessListener(aVoid -> {
