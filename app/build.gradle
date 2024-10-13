@@ -34,12 +34,20 @@ android {
 }
 
 dependencies {
-
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.libraries.places:places:3.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation libs.appcompat
     implementation libs.material
     implementation libs.constraintlayout
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    
+    implementation libs.recyclerview
+    testImplementation libs.junit
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
     implementation libs.firebase.firestore
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
