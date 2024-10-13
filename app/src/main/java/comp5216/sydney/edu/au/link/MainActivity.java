@@ -1,5 +1,6 @@
 package comp5216.sydney.edu.au.link;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -46,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void loadProfile(View view){
+        Intent intent = new Intent(MainActivity.this, AccountPage.class);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -74,4 +80,7 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+
+
 }
