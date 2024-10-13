@@ -11,13 +11,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import androidx.appcompat.app.AppCompatActivity;
-import java.util.HashMap;
-import android.view.View;
-import androidx.navigation.ui.AppBarConfiguration;
-import comp5216.sydney.edu.au.link.databinding.ActivityMainBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,6 +36,14 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+
+import java.util.HashMap;
+
+import androidx.navigation.ui.AppBarConfiguration;
+import comp5216.sydney.edu.au.link.databinding.ActivityMainBinding;
+import comp5216.sydney.edu.au.link.landing.LoginActivity;
+
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -201,6 +208,25 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             });
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Check if user is logged in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null) {
+            // User is not logged in, redirect to the LoginActivity
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();  // Close the MainActivity to prevent the user from returning to it
+        } else {
+            // User is logged in, continue with showing the main content
+            Toast.makeText(this, "Welcome back, " + currentUser.getEmail(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void initFirestore() {
         firestore = FirebaseFirestore.getInstance();

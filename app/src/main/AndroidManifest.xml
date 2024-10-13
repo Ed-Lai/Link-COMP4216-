@@ -26,10 +26,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".landing.LoginActivity"></activity>
+        <activity android:name=".landing.SignUpActivity"></activity>
         <activity android:name=".VenueDetailActivity" />
-
-
-
     </application>
 
 </manifest>
