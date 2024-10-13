@@ -28,9 +28,21 @@ public class VenueDetailActivity extends AppCompatActivity {
     private String currentUser = "Wizard of Oz";
     private HashMap<String, List<String>> checkinData = new HashMap<>();
     private String currentCheckedInPlace = null;
-    private Button checkinButton ;
+    private Button checkinButton;
 
+    // Save checked-in place in SharedPreferences
+    private void saveCheckedInPlace(String placeName) {
+        getSharedPreferences("app_prefs", MODE_PRIVATE)
+                .edit()
+                .putString("currentCheckedInPlace", placeName)
+                .apply();
+    }
 
+    // Retrieve saved checked-in place from SharedPreferences
+    private String getSavedCheckedInPlace() {
+        return getSharedPreferences("app_prefs", MODE_PRIVATE)
+                .getString("currentCheckedInPlace", null);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +68,7 @@ public class VenueDetailActivity extends AppCompatActivity {
         ImageView venuePhotoImageView = findViewById(R.id.venuePhotoImageView);
         if (photoMetadata != null) {
             FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(800)  // Optional: set image size
+                    .setMaxWidth(800)
                     .setMaxHeight(600)
                     .build();
 
@@ -67,91 +79,108 @@ public class VenueDetailActivity extends AppCompatActivity {
         }
 
         Button backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(view -> {
-            finish();
-        });
+        backButton.setOnClickListener(view -> finish());
 
+        // Retrieve saved check-in state
+        currentCheckedInPlace = getSavedCheckedInPlace();
+        updateButtonState(placeName);
 
-        updateButtonState();
-
+        // Check-in/out button listener
         checkinButton.setOnClickListener(view -> {
             if (currentCheckedInPlace == null) {
-                new AlertDialog.Builder(VenueDetailActivity.this)
-                        .setTitle("Check In Confirmation")
-                        .setMessage("Are you sure you want to check in at: " + placeName + "?")
-                        .setPositiveButton("Yes", (dialog, which) -> {
-                            addCheckinUser(placeName, currentUser);
-                            currentCheckedInPlace = placeName;
-                            updateButtonState();
-                            Toast.makeText(VenueDetailActivity.this, "Checked in at: " + placeName, Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                        .show();
+                promptCheckIn(placeName);
             } else if (currentCheckedInPlace.equals(placeName)) {
-                new AlertDialog.Builder(VenueDetailActivity.this)
-                        .setTitle("Check Out Confirmation")
-                        .setMessage("Are you sure you want to check out from: " + placeName + "?")
-                        .setPositiveButton("Yes", (dialog, which) -> {
-                            currentCheckedInPlace = null;
-                            updateButtonState();
-                            checkOutUser(placeName, currentUser);
-                            Toast.makeText(VenueDetailActivity.this, "Checked out from: " + placeName, Toast.LENGTH_SHORT).show();
-                        })
-                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
-                        .show();
+                promptCheckOut(placeName);
             } else {
-                Toast.makeText(VenueDetailActivity.this, "Please check out from " + currentCheckedInPlace + " before checking into another place.", Toast.LENGTH_LONG).show();
+                // Display a message to check out from the current place first
+                Toast.makeText(VenueDetailActivity.this, "Already checked in at " + currentCheckedInPlace + ". Please check out first.", Toast.LENGTH_LONG).show();
             }
         });
     }
-        private void updateButtonState() {
-            if (currentCheckedInPlace == null) {
-                checkinButton.setText("Check In");
-                checkinButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_green_dark))); // Green color for "Check In"
-            } else {
-                checkinButton.setText("Check Out");
-                checkinButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_red_dark))); // Red color for "Check Out"
-            }
-        }
 
-    private void addCheckinUser(String placeName, String userName) {
-        if (currentCheckedInPlace != null && checkinData.containsKey(placeName)) {
-            Toast.makeText(VenueDetailActivity.this, "You are already checked into " + currentCheckedInPlace + ". Please check out before checking into another place.", Toast.LENGTH_LONG).show();
-            return;
+    // Prompt for check-in confirmation
+    private void promptCheckIn(String placeName) {
+        new AlertDialog.Builder(VenueDetailActivity.this)
+                .setTitle("Check In Confirmation")
+                .setMessage("Are you sure you want to check in at: " + placeName + "?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    addCheckinUser(placeName, currentUser);
+                    currentCheckedInPlace = placeName;
+                    saveCheckedInPlace(placeName);
+                    updateButtonState(placeName);
+                    Toast.makeText(VenueDetailActivity.this, "Checked in at: " + placeName, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    // Prompt for check-out confirmation
+    private void promptCheckOut(String placeName) {
+        new AlertDialog.Builder(VenueDetailActivity.this)
+                .setTitle("Check Out Confirmation")
+                .setMessage("Are you sure you want to check out from: " + placeName + "?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    currentCheckedInPlace = null;
+                    saveCheckedInPlace(null);  // Clear the saved checked-in place
+                    updateButtonState(placeName);
+                    checkOutUser(placeName, currentUser);
+                    Toast.makeText(VenueDetailActivity.this, "Checked out from: " + placeName, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    // Update button state based on check-in status
+    private void updateButtonState(String placeName) {
+        if (currentCheckedInPlace == null) {
+            // Button is enabled for check-in (green)
+            checkinButton.setEnabled(true);
+            checkinButton.setText("Check In");
+            checkinButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_green_dark)));
+        } else if (currentCheckedInPlace.equals(placeName)) {
+            // Button is enabled for check-out (red)
+            checkinButton.setEnabled(true);
+            checkinButton.setText("Check Out");
+            checkinButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.holo_red_dark)));
+        } else {
+            // Button is disabled since checked in at a different place (grey)
+            checkinButton.setEnabled(false);
+            checkinButton.setText("Already Checked In");
+            checkinButton.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.darker_gray)));
         }
+    }
+
+    // Add user to the check-in list
+    private void addCheckinUser(String placeName, String userName) {
         if (!checkinData.containsKey(placeName)) {
             checkinData.put(placeName, new ArrayList<>());
         }
+
         List<String> usersCheckedIn = checkinData.get(placeName);
         if (!usersCheckedIn.contains(userName)) {
             usersCheckedIn.add(userName);
-            currentCheckedInPlace = placeName;
-            Toast.makeText(VenueDetailActivity.this, userName + " checked in at " + placeName, Toast.LENGTH_SHORT).show();
+            Log.d("VenueDetailActivity", userName + " checked in at " + placeName);
         } else {
-            Toast.makeText(VenueDetailActivity.this, "You are already checked into " + placeName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "You are already checked into " + placeName, Toast.LENGTH_SHORT).show();
         }
 
         Log.d("VenueDetailActivity", "Check-in data: " + checkinData);
     }
 
+    // Remove user from the check-in list
     private void checkOutUser(String placeName, String userName) {
-        if (currentCheckedInPlace == null || !currentCheckedInPlace.equals(placeName)) {
-            Toast.makeText(VenueDetailActivity.this, "You are not checked into this place.", Toast.LENGTH_SHORT).show();
+        if (!checkinData.containsKey(placeName)) {
             return;
         }
-        if (checkinData.containsKey(placeName)) {
-            List<String> usersCheckedIn = checkinData.get(placeName);
-            usersCheckedIn.remove(userName);
 
-            if (usersCheckedIn.isEmpty()) {
-                checkinData.remove(placeName);
-                Toast.makeText(VenueDetailActivity.this, "No users left, removed " + placeName + " from check-in data.", Toast.LENGTH_SHORT).show();
-            }
-            currentCheckedInPlace = null;
-            Toast.makeText(VenueDetailActivity.this, userName + " checked out from " + placeName, Toast.LENGTH_SHORT).show();
+        List<String> usersCheckedIn = checkinData.get(placeName);
+        usersCheckedIn.remove(userName);
+
+        if (usersCheckedIn.isEmpty()) {
+            checkinData.remove(placeName);
+            Log.d("VenueDetailActivity", "No users left, removed " + placeName + " from check-in data.");
         }
+
         Log.d("VenueDetailActivity", "Check-in data after checkout: " + checkinData);
     }
-
-
 }
