@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -175,13 +176,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         startActivity(intent);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
 
-    private String formatOpeningHours(OpeningHours openingHours) {
+    private String formatOpeningHours (OpeningHours openingHours){
         if (openingHours == null || openingHours.getWeekdayText() == null) {
             return "No opening hours available";
         }
@@ -192,7 +188,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         return formattedHours.toString();
     }
 
-    private void fetchNearbyPlaces(Location location) {
+
+    private void fetchNearbyPlaces (Location location){
         List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ID, Place.Field.TYPES); // Add Place.TYPES field
         FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(placeFields);
 
@@ -224,7 +221,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart () {
         super.onStart();
 
         // Check if user is logged in (non-null) and update UI accordingly.
@@ -241,20 +238,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-
-    private void initFirestore() {
+    private void initFirestore(){
         firestore = FirebaseFirestore.getInstance();
 
     }
 
-    private void testDatabase() {
+    private void testDatabase(){
         HashMap<String, Object> testData = new HashMap<>();
         testData.put("testKey", "testValue");
 
         CollectionReference testCollection = firestore.collection("testCollection");
         testCollection.add(testData);
     }
-
-
-
 }
