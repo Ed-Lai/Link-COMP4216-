@@ -48,7 +48,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_main);
 
         // Initialize the Places API
-        Places.initialize(getApplicationContext(), "YOUR KEY");
+        Places.initialize(getApplicationContext(), "AIzaSyAA87EkKQ1JX341Q3fMnyrDd1UiCs19FI8");
 
         placesClient = Places.createClient(this);
 
