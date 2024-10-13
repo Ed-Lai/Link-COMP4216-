@@ -11,6 +11,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.HashMap;
+import android.view.View;
+import androidx.navigation.ui.AppBarConfiguration;
+import comp5216.sydney.edu.au.link.databinding.ActivityMainBinding;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -41,11 +48,16 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private PlacesClient placesClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private Location currentLocation;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+      
+        initFirestore();
+        testDatabase();
+        
 
         // Initialize the Places API
         Places.initialize(getApplicationContext(), "AIzaSyAA87EkKQ1JX341Q3fMnyrDd1UiCs19FI8");
@@ -126,7 +138,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
                 placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                     Place place = response.getPlace();
-
                     // Pass place details to VenueDetailActivity
                     Intent intent = new Intent(MainActivity.this, VenueDetailActivity.class);
                     intent.putExtra("placeName", place.getName());
@@ -189,5 +200,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 Toast.makeText(MainActivity.this, "Failed to get places: " + exception.getMessage(), Toast.LENGTH_LONG).show();
             });
         }
+    }
+
+    private void initFirestore() {
+        firestore = FirebaseFirestore.getInstance();
+
+    }
+
+    private void testDatabase() {
+        HashMap<String, Object> testData = new HashMap<>();
+        testData.put("testKey", "testValue");
+
+        CollectionReference testCollection = firestore.collection("testCollection");
+        testCollection.add(testData);
     }
 }
