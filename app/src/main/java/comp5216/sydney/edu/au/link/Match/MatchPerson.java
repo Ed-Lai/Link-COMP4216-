@@ -26,11 +26,12 @@ public class MatchPerson {
 
     private UserProfile userProfile;
 
-    public MatchPerson(String matchPersonName, String interest, String photoPath,String userID) {
+    public MatchPerson(String matchPersonName, String interest, String photoPath,String userID, String preference) {
         this.matchPersonName = matchPersonName;
         this.interest = interest;
         this.photoPath = photoPath;
         this.userID = userID;
+        this.preference = preference;
     }
     public String getUserID() {
         return userID;

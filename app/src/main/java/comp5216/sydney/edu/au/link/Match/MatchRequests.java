@@ -27,7 +27,7 @@ public class MatchRequests {
     }
 
     // 带参构造函数
-    public MatchRequests(String requesterId, String requestedId, String status, UserProfile userProfile) {
+    public MatchRequests(String requesterId, String requestedId, String status) {
         this.requesterId = requesterId;
         this.requestedId = requestedId;
         this.status = status;
@@ -59,27 +59,7 @@ public class MatchRequests {
         this.status = status;
     }
 
-    public List<MatchPerson> findMatchingUsers(List<MatchPerson> allUsers, MatchPerson currentUser) {
-        List<MatchPerson> matchedUsers = new ArrayList<>();
 
-        for (MatchPerson user : allUsers) {
-            if (!user.getUserID().equals(currentUser.getUserID())) { // 避免与自己匹配
-                int commonInterestCount = calculateCommonInterests(currentUser.getInterest(), user.getInterest());
-                if (commonInterestCount > THRESHOLD) { // 定义一个阈值用于匹配
-                    matchedUsers.add(user);
-                }
-            }
-        }
-
-        return matchedUsers;
-    }
-
-    private int calculateCommonInterests(String interests1, String interests2) {
-        Set<String> set1 = new HashSet<>(Arrays.asList(interests1.split(" ")));
-        Set<String> set2 = new HashSet<>(Arrays.asList(interests2.split(" ")));
-        set1.retainAll(set2);
-        return set1.size();
-    }
 
 }
 

@@ -18,14 +18,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import comp5216.sydney.edu.au.link.R;
 
 public class MatchPageActivity extends AppCompatActivity {
 
+    private static final int THRESHOLD = 1;
     private TextView matchName;
     private TextView matchStart;
     private com.google.android.material.imageview.ShapeableImageView matchUserPhoto;
@@ -49,8 +53,8 @@ public class MatchPageActivity extends AppCompatActivity {
 
         // 初始化 Firebase Firestore 和当前用户ID
         db = FirebaseFirestore.getInstance();
-        currentUserId = getCurrentUserId();
-        //currentUserId = "3";
+        //currentUserId = getCurrentUserId();
+        currentUserId = "1";
 
         matchedPersons = new ArrayList<>();
 
@@ -79,13 +83,13 @@ public class MatchPageActivity extends AppCompatActivity {
 
     }
 
-    private void loadMatchedUsers() {
+    /*private void loadMatchedUsers() {
         db.collection("matchpersons")
                 .whereNotEqualTo("userID", currentUserId) // 不包括当前用户
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     matchedPersons.clear();
-                    for (QueryDocumentSnapshot document : querySnapshot) {
+                    for (QueryDocumentSnapshot document : querySnapshot) { //111111
                         MatchPerson person = document.toObject(MatchPerson.class);
                         matchedPersons.add(person);
                     }
@@ -98,7 +102,55 @@ public class MatchPageActivity extends AppCompatActivity {
                     Log.e("Firestore", "Error loading matched users", e);
                     Toast.makeText(this, "Error loading users info.", Toast.LENGTH_SHORT).show();
                 });
+    }*/
+
+    private void loadMatchedUsers() {
+        // 获取当前用户的兴趣和偏好
+        db.collection("matchpersons").document(currentUserId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        MatchPerson currentUser = documentSnapshot.toObject(MatchPerson.class);
+                        String currentUserInterests = currentUser.getInterest();
+                        String currentUserPreferences = currentUser.getPreference();
+
+                        // 获取其他用户的信息
+                        db.collection("matchpersons")
+                                .whereNotEqualTo("userID", currentUserId) // 不包括当前用户
+                                .get()
+                                .addOnSuccessListener(querySnapshot -> {
+                                    matchedPersons.clear();
+                                    for (QueryDocumentSnapshot document : querySnapshot) {
+                                        MatchPerson person = document.toObject(MatchPerson.class);
+                                        String otherUserInterests = person.getInterest();
+                                        String otherUserPreferences = person.getPreference();
+
+                                        // 计算匹配度
+                                        int commonInterestCount = calculateCommonInterests(currentUserInterests, otherUserInterests);
+                                        int commonPreferenceCount = calculateCommonInterests(currentUserPreferences, otherUserPreferences);
+
+                                        // 如果匹配度满足条件，则添加到匹配列表
+                                        if (commonInterestCount > THRESHOLD && commonPreferenceCount > THRESHOLD) {
+                                            matchedPersons.add(person);
+                                        }
+                                    }
+                                    // 显示第一个用户
+                                    if (!matchedPersons.isEmpty()) {
+                                        showPersonAtIndex(currentIndex);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.e("Firestore", "Error loading matched users", e);
+                                    Toast.makeText(this, "Error loading users info.", Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error loading current user", e);
+                    Toast.makeText(this, "Error loading current user info.", Toast.LENGTH_SHORT).show();
+                });
     }
+
     // 显示下一个用户
     private void showNextPerson() {
         if (currentIndex < matchedPersons.size() - 1) {
@@ -164,6 +216,41 @@ public class MatchPageActivity extends AppCompatActivity {
                     Log.e("Firestore", "Error saving match request", e);
                     Toast.makeText(MatchPageActivity.this, "Error sending match request.", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    public List<MatchPerson> findMatchingUsers(List<MatchPerson> allUsers, MatchPerson currentUser) {
+        List<MatchPerson> matchedUsers = new ArrayList<>();
+
+        for (MatchPerson user : allUsers) {
+            if (!user.getUserID().equals(currentUser.getUserID())) { // 避免与自己匹配
+                int commonInterestCount = calculateCommonInterests(currentUser.getInterest(), user.getInterest());
+                if (commonInterestCount > THRESHOLD) { // 定义一个阈值用于匹配
+                    matchedUsers.add(user);
+                }
+            }
+        }
+
+        return matchedUsers;
+    }
+
+    private int calculateCommonInterests(String interests1, String interests2) {
+
+        System.out.println("interests1: " + interests1);
+        System.out.println("interests2: " + interests2);
+
+        // 如果有任何一个为 null 或为空，返回匹配度为 0
+        if (interests1 == null || interests1.isEmpty() || interests2 == null || interests2.isEmpty()) {
+            return 0;
+        }
+
+        // 将兴趣字符串按空格分隔并转换为集合
+        Set<String> set1 = new HashSet<>(Arrays.asList(interests1.split(" ")));
+        Set<String> set2 = new HashSet<>(Arrays.asList(interests2.split(" ")));
+        System.out.println();
+
+        // 计算交集
+        set1.retainAll(set2);
+        return set1.size();
     }
 
 
