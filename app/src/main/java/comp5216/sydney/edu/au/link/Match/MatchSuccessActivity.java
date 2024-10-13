@@ -22,13 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import comp5216.sydney.edu.au.link.R;
+import comp5216.sydney.edu.au.link.model.UserProfile;
 
 public class MatchSuccessActivity extends AppCompatActivity implements MatchSuccessActivityAdapter.OnDeleteRequestListener{
 
     private FirebaseFirestore db;
     private ListView listView;
     private MatchSuccessActivityAdapter adapter;
-    private List<MatchPerson> matchPersonList;
+    private List<UserProfile> matchPersonList;
     private ImageButton imageButton;
     private String currentUserId;
     @Override
@@ -47,8 +48,8 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
             startActivity(intent);
         });
 
-        //       String currentUserId = getCurrentUserId();
-        currentUserId = "1";
+        currentUserId = getCurrentUserId();
+        //currentUserId = "1";
 
 
 
@@ -86,13 +87,13 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
                 });
     }
     private void loadMatchPersonDetails(String requesterID) {
-        db.collection("matchpersons")
+        db.collection("userProfiles")
                 .whereEqualTo("userID", requesterID) // 假设 "userId" 是字段名
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         for (QueryDocumentSnapshot document : querySnapshot) {
-                            MatchPerson person = document.toObject(MatchPerson.class);
+                            UserProfile person = document.toObject(UserProfile.class);
                             matchPersonList.add(person); // 添加到显示列表
                             adapter.notifyDataSetChanged();
                         }
@@ -103,8 +104,8 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
                 .addOnFailureListener(e -> Log.e("Firestore", "Error fetching MatchPerson details", e));
     }
     @Override
-    public void onDeleteRequest(MatchPerson person) {
-        String documentName = person.getUserID()+"to"+currentUserId;
+    public void onDeleteRequest(UserProfile person) {
+        String documentName = person.getUserId()+"to"+currentUserId;
         db.collection("matchRequests").document(documentName)
                 .delete()
                 .addOnSuccessListener(aVoid -> {

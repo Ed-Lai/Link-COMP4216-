@@ -19,7 +19,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAA87EkKQ1JX341Q3fMnyrDd1UiCs19FI8"/>
         <activity
-            android:name=".MainActivity"
+            android:name=".landing.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.Link">
             <intent-filter>
@@ -28,11 +28,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".landing.LoginActivity"></activity>
+<!--        <activity android:name=".landing.LoginActivity"></activity>-->
         <activity android:name=".landing.SignUpActivity"></activity>
         <activity android:name=".VenueDetailActivity" />
         <activity android:name=".Match.MatchPageActivity" />
         <activity android:name=".Match.MatchSuccessActivity" />
+        <activity android:name=".Match.MatchActivity" />
     </application>
 
 </manifest>

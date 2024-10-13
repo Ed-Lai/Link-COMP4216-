@@ -48,7 +48,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
         });
 
  //       String currentUserId = getCurrentUserId();
-        currentUserId = "1";
+        currentUserId = getCurrentUserId();
 
 
         adapter = new MatchAdapter(this, matchPersonList, this,this);
@@ -120,7 +120,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
     }*/
 
     private void loadMatchPersonDetails(String requesterID) {
-        db.collection("matchpersons")
+        db.collection("userProfiles")
                 .whereEqualTo("userID", requesterID) // 假设 "userId" 是字段名
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -136,6 +136,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
                 })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error fetching UserProfile details", e));
     }
+
 
 
 
@@ -210,9 +211,9 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
         person3.setPreferences(Arrays.asList(preferences3.split(" ")));
 
         // 将数据插入到Firebase Firestore "matchpersons"
-        db.collection("matchpersons").document(person1.getUserId()).set(person1);
-        db.collection("matchpersons").document(person2.getUserId()).set(person2);
-        db.collection("matchpersons").document(person3.getUserId()).set(person3)
+        db.collection("userProfiles").document(person1.getUserId()).set(person1);
+        db.collection("userProfiles").document(person2.getUserId()).set(person2);
+        db.collection("userProfiles").document(person3.getUserId()).set(person3)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "Sample data with interests and preferences inserted successfully.");
                 })
@@ -224,6 +225,8 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
 
 
     private int calculateCommonInterests(String interests1, String interests2) {
+
+
         // 如果有任何一个为 null 或为空，返回匹配度为 0
         if (interests1 == null || interests1.isEmpty() || interests2 == null || interests2.isEmpty()) {
             return 0;

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import comp5216.sydney.edu.au.link.R;
+import comp5216.sydney.edu.au.link.model.UserProfile;
 
 public class MatchPageActivity extends AppCompatActivity {
 
@@ -40,7 +41,7 @@ public class MatchPageActivity extends AppCompatActivity {
     private String matchedUserId;
     private ImageButton imageButton;
 
-    private List<MatchPerson> matchedPersons; // 用户数据列表
+    private List<UserProfile> matchedPersons; // 用户数据列表
     private int currentIndex = 0; // 当前显示用户的索引
 
     private ImageButton rightPersonButton;
@@ -53,8 +54,8 @@ public class MatchPageActivity extends AppCompatActivity {
 
         // 初始化 Firebase Firestore 和当前用户ID
         db = FirebaseFirestore.getInstance();
-        //currentUserId = getCurrentUserId();
-        currentUserId = "1";
+        currentUserId = getCurrentUserId();
+        //currentUserId = "1";
 
         matchedPersons = new ArrayList<>();
 
@@ -83,14 +84,14 @@ public class MatchPageActivity extends AppCompatActivity {
 
     }
 
-    /*private void loadMatchedUsers() {
-        db.collection("matchpersons")
-                .whereNotEqualTo("userID", currentUserId) // 不包括当前用户
+    private void loadMatchedUsers() {
+        db.collection("userProfiles")
+                .whereNotEqualTo("userId", currentUserId) // 不包括当前用户
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     matchedPersons.clear();
                     for (QueryDocumentSnapshot document : querySnapshot) { //111111
-                        MatchPerson person = document.toObject(MatchPerson.class);
+                        UserProfile person = document.toObject(UserProfile.class);
                         matchedPersons.add(person);
                     }
                     // 显示第一个用户
@@ -102,26 +103,26 @@ public class MatchPageActivity extends AppCompatActivity {
                     Log.e("Firestore", "Error loading matched users", e);
                     Toast.makeText(this, "Error loading users info.", Toast.LENGTH_SHORT).show();
                 });
-    }*/
+    }
 
-    private void loadMatchedUsers() {
+    /*private void loadMatchedUsers() {
         // 获取当前用户的兴趣和偏好
-        db.collection("matchpersons").document(currentUserId)
+        db.collection("userProfiles").document(currentUserId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        MatchPerson currentUser = documentSnapshot.toObject(MatchPerson.class);
+                        UserProfile currentUser = documentSnapshot.toObject(UserProfile.class);
                         String currentUserInterests = currentUser.getInterest();
                         String currentUserPreferences = currentUser.getPreference();
 
                         // 获取其他用户的信息
-                        db.collection("matchpersons")
+                        db.collection("userProfiles")
                                 .whereNotEqualTo("userID", currentUserId) // 不包括当前用户
                                 .get()
                                 .addOnSuccessListener(querySnapshot -> {
                                     matchedPersons.clear();
                                     for (QueryDocumentSnapshot document : querySnapshot) {
-                                        MatchPerson person = document.toObject(MatchPerson.class);
+                                        UserProfile person = document.toObject(userProfiles.class);
                                         String otherUserInterests = person.getInterest();
                                         String otherUserPreferences = person.getPreference();
 
@@ -149,7 +150,7 @@ public class MatchPageActivity extends AppCompatActivity {
                     Log.e("Firestore", "Error loading current user", e);
                     Toast.makeText(this, "Error loading current user info.", Toast.LENGTH_SHORT).show();
                 });
-    }
+    }*/
 
     // 显示下一个用户
     private void showNextPerson() {
@@ -173,13 +174,13 @@ public class MatchPageActivity extends AppCompatActivity {
 
     // 根据索引显示用户信息
     private void showPersonAtIndex(int index) {
-        MatchPerson person = matchedPersons.get(index);
-        matchedUserId = person.getUserID();
-        matchName.setText(person.getMatchPersonName());
+        UserProfile person = matchedPersons.get(index);
+        matchedUserId = person.getUserId();
+        matchName.setText(person.getName());
 
         // 使用 Glide 加载用户图片
-        if (person.getPhotoPath() != null && !person.getPhotoPath().isEmpty()) {
-            Glide.with(this).load(person.getPhotoPath()).into(matchUserPhoto);
+        if (person.getProfilePictureUrl() != null && !person.getProfilePictureUrl().isEmpty()) {
+            Glide.with(this).load(person.getProfilePictureUrl()).into(matchUserPhoto);
         } else {
             matchUserPhoto.setImageResource(R.drawable.default_image);
         }
@@ -218,20 +219,6 @@ public class MatchPageActivity extends AppCompatActivity {
                 });
     }
 
-    public List<MatchPerson> findMatchingUsers(List<MatchPerson> allUsers, MatchPerson currentUser) {
-        List<MatchPerson> matchedUsers = new ArrayList<>();
-
-        for (MatchPerson user : allUsers) {
-            if (!user.getUserID().equals(currentUser.getUserID())) { // 避免与自己匹配
-                int commonInterestCount = calculateCommonInterests(currentUser.getInterest(), user.getInterest());
-                if (commonInterestCount > THRESHOLD) { // 定义一个阈值用于匹配
-                    matchedUsers.add(user);
-                }
-            }
-        }
-
-        return matchedUsers;
-    }
 
     private int calculateCommonInterests(String interests1, String interests2) {
 
