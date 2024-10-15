@@ -24,7 +24,7 @@ public class MatchSuccessActivityAdapter extends ArrayAdapter<UserProfile> {
 
     // Modify constructor to accept OnMatchRequestListener
     public MatchSuccessActivityAdapter(Context context, List<UserProfile> items, OnDeleteRequestListener deleteListener) {
-        super(context, 0);
+        super(context, 0, items);
         this.matchPersonList = items;
         this.deleteRequestListener = deleteListener;
 

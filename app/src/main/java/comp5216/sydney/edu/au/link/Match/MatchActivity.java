@@ -130,7 +130,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
 
     private void loadMatchPersonDetails(String requesterID) {
         db.collection("userProfiles")
-                .whereEqualTo("userID", requesterID) // 假设 "userId" 是字段名
+                .whereEqualTo("userId", requesterID) // 假设 "userId" 是字段名
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {

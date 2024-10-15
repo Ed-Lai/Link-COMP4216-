@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -61,48 +63,75 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
     private void loadAllMatchesForCurrentUser( ) {
         CollectionReference matchPersonRef = db.collection("matchRequests");
 
-        matchPersonRef.whereEqualTo("requestedId", currentUserId)
+        // 查询 requestedId 为 currentUserId 且状态为 finish 的文档
+        Task<QuerySnapshot> requestedIdQuery = matchPersonRef.whereEqualTo("requestedId", currentUserId)
                 .whereEqualTo("status", "finish")
-                .get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("Firestore", "Data fetched successfully");
-                        matchPersonList.clear();
-                        QuerySnapshot result = task.getResult();
+                .get();
 
-                        if (result.isEmpty()) {
-                            Log.d("Firestore", "No documents found in MatchRequests");
-                        } else {
-                            for (QueryDocumentSnapshot document : result) {
-                                MatchRequests matchRequest = document.toObject(MatchRequests.class);
-                                if (matchRequest.getRequestedId() != null) {
-                                    loadMatchPersonDetails(matchRequest.getRequesterId());
-                                }
+        // 查询 requesterId 为 currentUserId 且状态为 finish 的文档
+        Task<QuerySnapshot> requesterIdQuery = matchPersonRef.whereEqualTo("requesterId", currentUserId)
+                .whereEqualTo("status", "finish")
+                .get();
+
+        // 使用 Tasks.whenAllSuccess 来等待所有查询完成
+        Tasks.whenAllSuccess(requestedIdQuery, requesterIdQuery).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("Firestore", "Data fetched successfully");
+
+                matchPersonList.clear();  // 清除之前的数据
+
+                // 获取查询结果
+                List<Object> queryResults = task.getResult();
+                for (Object result : queryResults) {
+                    QuerySnapshot querySnapshot = (QuerySnapshot) result;  // 将 Object 转换为 QuerySnapshot
+
+                    if (!querySnapshot.isEmpty()) {
+                        for (QueryDocumentSnapshot document : querySnapshot) {
+                            MatchRequests matchRequest = document.toObject(MatchRequests.class);
+
+                            // 无论是 requestedId 还是 requesterId，加载相关用户详情
+                            if (matchRequest.getRequestedId() != null) {
+                                loadMatchPersonDetails(matchRequest.getRequesterId());
+                                Log.d("Firestore", "requesterId"+matchRequest.getRequesterId());
                             }
-                            // 确保所有数据加载完成后再刷新适配器
-                            adapter.notifyDataSetChanged();
+                            if (matchRequest.getRequesterId() != null) {
+                                loadMatchPersonDetails(matchRequest.getRequestedId());
+                                Log.d("Firestore", "requestedId"+matchRequest.getRequestedId());
+                            }
                         }
                     } else {
-                        Log.e("Firestore", "Error fetching data", task.getException());
+                        Log.d("Firestore", "No documents found in MatchRequests");
                     }
-                });
+                }
+
+                // 确保所有数据加载完成后再刷新适配器
+                adapter.notifyDataSetChanged();
+            } else {
+                Log.e("Firestore", "Error fetching data", task.getException());
+            }
+        });
     }
     private void loadMatchPersonDetails(String requesterID) {
+        Log.d("Firestore", "Loading user profile for requesterID: " + requesterID); // 添加日志
         db.collection("userProfiles")
-                .whereEqualTo("userID", requesterID) // 假设 "userId" 是字段名
+                .whereEqualTo("userId", requesterID) // 假设 "userId" 是字段名
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
+                    Log.d("Firestore", "UserProfile query snapshot size: " + querySnapshot.size()); // 检查返回的文档数量
                     if (!querySnapshot.isEmpty()) {
                         for (QueryDocumentSnapshot document : querySnapshot) {
                             UserProfile person = document.toObject(UserProfile.class);
+                            Log.d("Firestore", "UserProfile fetched: " + person); // 打印获取到的用户数据
                             matchPersonList.add(person); // 添加到显示列表
                             adapter.notifyDataSetChanged();
                         }
                     } else {
-                        Log.e("MatchActivity", "No MatchPerson document found for requesterId: " + requesterID);
+                        Log.e("MatchActivity", "No UserProfile document found for requesterId: " + requesterID);
                     }
                 })
-                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching MatchPerson details", e));
+                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching UserProfile details", e));
     }
+
     @Override
     public void onDeleteRequest(UserProfile person) {
         String documentName = person.getUserId()+"to"+currentUserId;

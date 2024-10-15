@@ -29,7 +29,8 @@
             </intent-filter>
         </activity>
 <!--        <activity android:name=".landing.LoginActivity"></activity>-->
-        <activity android:name=".landing.SignUpActivity"></activity>
+<!--        <activity android:name=".landing.LoginActivity" />-->
+        <activity android:name=".landing.SignUpActivity" />
         <activity android:name=".VenueDetailActivity" />
         <activity android:name=".Match.MatchPageActivity" />
         <activity android:name=".Match.MatchSuccessActivity" />
