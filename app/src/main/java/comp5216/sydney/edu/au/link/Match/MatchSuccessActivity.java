@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import comp5216.sydney.edu.au.link.R;
-import comp5216.sydney.edu.au.link.model.UserProfile;
+import comp5216.sydney.edu.au.link.UserProfile;
 
 public class MatchSuccessActivity extends AppCompatActivity implements MatchSuccessActivityAdapter.OnDeleteRequestListener{
 

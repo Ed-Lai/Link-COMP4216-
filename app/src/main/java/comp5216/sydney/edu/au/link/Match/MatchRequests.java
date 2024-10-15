@@ -1,12 +1,6 @@
 package comp5216.sydney.edu.au.link.Match;
 import com.google.firebase.firestore.PropertyName;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import comp5216.sydney.edu.au.link.UserProfile;
 
 public class MatchRequests {

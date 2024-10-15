@@ -3,7 +3,6 @@ package comp5216.sydney.edu.au.link.landing;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
@@ -14,12 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Arrays;
-
-import comp5216.sydney.edu.au.link.MainActivity;
 import comp5216.sydney.edu.au.link.Match.MatchActivity;
 import comp5216.sydney.edu.au.link.R;
-import comp5216.sydney.edu.au.link.UserProfile;
 
 
 public class LoginActivity extends AppCompatActivity {

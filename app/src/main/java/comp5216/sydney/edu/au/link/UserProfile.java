@@ -1,7 +1,9 @@
 package comp5216.sydney.edu.au.link;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class UserProfile {
 
@@ -17,6 +19,7 @@ public class UserProfile {
     private List<String> preferences;
     private boolean isVisible;
     private String relationshipStatus;
+    private HashSet<String> personInMatch;
 
     private static final String DEFAULT_PROFILE_PICTURE_URL =
             "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
@@ -46,9 +49,19 @@ public class UserProfile {
         this.preferences = DEFAULT_PREFERENCES;
         this.isVisible = DEFAULT_VISIBILITY;
         this.relationshipStatus = DEFAULT_RELATIONSHIP_STATUS;
+        this.personInMatch = new HashSet<>();
     }
 
     // Getters and Setters
+
+    public HashSet<String> getPersonInMatch(){ return personInMatch;}
+
+    public void addPersonInMatch(String personInMatch){
+        this.personInMatch.add(personInMatch);
+    }
+    public void deletePersonInMatch(String personInMatch){
+        this.personInMatch.remove(personInMatch);
+    }
 
     public String getUserId() {
         return userId;

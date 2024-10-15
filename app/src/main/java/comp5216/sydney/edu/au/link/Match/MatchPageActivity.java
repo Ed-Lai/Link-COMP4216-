@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import comp5216.sydney.edu.au.link.R;
+import comp5216.sydney.edu.au.link.UserProfile;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
-import comp5216.sydney.edu.au.link.model.UserProfile;
 
 public class MatchPageActivity extends AppCompatActivity {
 
@@ -101,7 +101,7 @@ public class MatchPageActivity extends AppCompatActivity {
 
     }
 
-    private void loadMatchedUsers() {
+    /*private void loadMatchedUsers() {
         if (currentUserId == null) {
             Toast.makeText(this, "Current user ID is null. Cannot load matched users.", Toast.LENGTH_SHORT).show();
             return;
@@ -125,7 +125,60 @@ public class MatchPageActivity extends AppCompatActivity {
                     Log.e("Firestore", "Error loading matched users", e);
                     Toast.makeText(this, "Error loading users info.", Toast.LENGTH_SHORT).show();
                 });
+    }*/
+
+    private void loadMatchedUsers() {
+        if (currentUserId == null) {
+            Toast.makeText(this, "Current user ID is null. Cannot load matched users.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 获取当前用户的 UserProfile 以便获取匹配中的用户集合
+        db.collection("userProfiles").document(currentUserId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
+                        if (currentUserProfile != null) {
+                            HashSet<String> personInMatchSet = currentUserProfile.getPersonInMatch();
+
+                            // 获取其他用户的信息
+                            db.collection("userProfiles")
+                                    .whereNotEqualTo("userId", currentUserId) // 确保 userId 是数据库中的字段名
+                                    .get()
+                                    .addOnSuccessListener(querySnapshot -> {
+                                        matchedPersons.clear();
+                                        for (QueryDocumentSnapshot document : querySnapshot) {
+                                            UserProfile person = document.toObject(UserProfile.class);
+
+                                            // 检查该 person 是否已经存在于当前用户的匹配集合中
+                                            if (personInMatchSet == null || !personInMatchSet.contains(person.getUserId())) {
+                                                matchedPersons.add(person);
+                                            }
+                                        }
+                                        // 显示第一个用户
+                                        if (!matchedPersons.isEmpty()) {
+                                            showPersonAtIndex(currentIndex);
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e("Firestore", "Error loading matched users", e);
+                                        Toast.makeText(this, "Error loading users info.", Toast.LENGTH_SHORT).show();
+                                    });
+                        } else {
+                            Toast.makeText(this, "Failed to load current user profile.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.e("Firestore", "Current user profile does not exist");
+                        Toast.makeText(this, "Current user profile does not exist.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error fetching current user profile", e);
+                    Toast.makeText(this, "Error loading current user info.", Toast.LENGTH_SHORT).show();
+                });
     }
+
 
     /*private void loadMatchedUsers() {
         // 获取当前用户的兴趣和偏好

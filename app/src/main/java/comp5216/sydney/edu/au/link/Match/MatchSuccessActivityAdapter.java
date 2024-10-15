@@ -16,7 +16,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 import java.util.List;
 
 import comp5216.sydney.edu.au.link.R;
-import comp5216.sydney.edu.au.link.model.UserProfile;
+import comp5216.sydney.edu.au.link.UserProfile;
 
 public class MatchSuccessActivityAdapter extends ArrayAdapter<UserProfile> {
     private List<UserProfile> matchPersonList;
