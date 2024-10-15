@@ -21,7 +21,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import comp5216.sydney.edu.au.link.R;
 import comp5216.sydney.edu.au.link.model.UserProfile;
@@ -72,6 +74,7 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
         Task<QuerySnapshot> requesterIdQuery = matchPersonRef.whereEqualTo("requesterId", currentUserId)
                 .whereEqualTo("status", "finish")
                 .get();
+        Set<String> loadedUserIds = new HashSet<>();
 
         // 使用 Tasks.whenAllSuccess 来等待所有查询完成
         Tasks.whenAllSuccess(requestedIdQuery, requesterIdQuery).addOnCompleteListener(task -> {
@@ -89,14 +92,20 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
                         for (QueryDocumentSnapshot document : querySnapshot) {
                             MatchRequests matchRequest = document.toObject(MatchRequests.class);
 
-                            // 无论是 requestedId 还是 requesterId，加载相关用户详情
-                            if (matchRequest.getRequestedId() != null) {
-                                loadMatchPersonDetails(matchRequest.getRequesterId());
-                                Log.d("Firestore", "requesterId"+matchRequest.getRequesterId());
+                            String requesterId = matchRequest.getRequesterId();
+                            String requestedId = matchRequest.getRequestedId();
+                            // 检查并加载 requesterId
+                            if (requesterId != null && !requesterId.equals(currentUserId) && !loadedUserIds.contains(requesterId)) {
+                                loadMatchPersonDetails(requesterId);
+                                Log.d("Firestore", "Loaded requesterId: " + requesterId);
+                                loadedUserIds.add(requesterId);  // 标记为已加载
                             }
-                            if (matchRequest.getRequesterId() != null) {
-                                loadMatchPersonDetails(matchRequest.getRequestedId());
-                                Log.d("Firestore", "requestedId"+matchRequest.getRequestedId());
+
+                            // 检查并加载 requestedId
+                            if (requestedId != null && !requestedId.equals(currentUserId) && !loadedUserIds.contains(requestedId)) {
+                                loadMatchPersonDetails(requestedId);
+                                Log.d("Firestore", "Loaded requestedId: " + requestedId);
+                                loadedUserIds.add(requestedId);  // 标记为已加载
                             }
                         }
                     } else {
