@@ -19,7 +19,7 @@ public class UserProfile {
     private List<String> preferences;
     private boolean isVisible;
     private String relationshipStatus;
-    private HashSet<String> personInMatch;
+    private ArrayList<String> personInMatch;
 
     private static final String DEFAULT_PROFILE_PICTURE_URL =
             "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
@@ -49,12 +49,12 @@ public class UserProfile {
         this.preferences = DEFAULT_PREFERENCES;
         this.isVisible = DEFAULT_VISIBILITY;
         this.relationshipStatus = DEFAULT_RELATIONSHIP_STATUS;
-        this.personInMatch = new HashSet<>();
+        this.personInMatch = new ArrayList<>();
     }
 
     // Getters and Setters
 
-    public HashSet<String> getPersonInMatch(){ return personInMatch;}
+    public ArrayList<String> getPersonInMatch(){ return personInMatch;}
 
     public void addPersonInMatch(String personInMatch){
         this.personInMatch.add(personInMatch);

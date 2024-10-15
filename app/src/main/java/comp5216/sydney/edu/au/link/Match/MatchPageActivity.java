@@ -140,7 +140,7 @@ public class MatchPageActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
                         if (currentUserProfile != null) {
-                            HashSet<String> personInMatchSet = currentUserProfile.getPersonInMatch();
+                            ArrayList<String> personInMatchSet = currentUserProfile.getPersonInMatch();
 
                             // 获取其他用户的信息
                             db.collection("userProfiles")
