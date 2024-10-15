@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import comp5216.sydney.edu.au.link.R;
+import comp5216.sydney.edu.au.link.landing.LoginActivity;
 import comp5216.sydney.edu.au.link.model.UserProfile;
 
 public class MatchPageActivity extends AppCompatActivity {
@@ -57,6 +58,18 @@ public class MatchPageActivity extends AppCompatActivity {
         currentUserId = getCurrentUserId();
         //currentUserId = "1";
 
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            Toast.makeText(this, "UserID Logged in user ID: " + userId, Toast.LENGTH_SHORT).show();
+        } else {
+            // 用户未登录，跳转到登录页面
+            Toast.makeText(this, "login unsuccessful", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         matchedPersons = new ArrayList<>();
 
         imageButton = findViewById(R.id.match_gobackimageButton);
@@ -82,15 +95,24 @@ public class MatchPageActivity extends AppCompatActivity {
         matchButton.setOnClickListener(v -> sendMatchRequest());
 
 
+
+
+
+
     }
 
     private void loadMatchedUsers() {
+        if (currentUserId == null) {
+            Toast.makeText(this, "Current user ID is null. Cannot load matched users.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         db.collection("userProfiles")
-                .whereNotEqualTo("userId", currentUserId) // 不包括当前用户
+                .whereNotEqualTo("userId", currentUserId) // 确保 userId 是数据库中的字段名
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     matchedPersons.clear();
-                    for (QueryDocumentSnapshot document : querySnapshot) { //111111
+                    for (QueryDocumentSnapshot document : querySnapshot) {
                         UserProfile person = document.toObject(UserProfile.class);
                         matchedPersons.add(person);
                     }
@@ -152,11 +174,48 @@ public class MatchPageActivity extends AppCompatActivity {
                 });
     }*/
 
+    private void checkMatchingStatus() {
+        if (matchedPersons.isEmpty() || currentIndex < 0 || currentIndex >= matchedPersons.size()) {
+            return;
+        }
+
+        String matchedUserId = matchedPersons.get(currentIndex).getUserId();  // 获取当前显示用户的 ID
+
+        // 查询 matchRequests 集合以检测是否存在匹配请求
+        String documentName = currentUserId + "to" + matchedUserId;
+        db.collection("matchRequests")
+                .document(documentName)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String status = documentSnapshot.getString("status");
+                        if ("pending".equalsIgnoreCase(status)) {
+                            // 如果匹配请求是 "pending"，则设置按钮状态为 "Matching"
+                            matchButton.setText("Matching");
+                        } else if ("accepted".equalsIgnoreCase(status)) {
+                            // 如果匹配请求被接受，则设置按钮状态为 "Matched"
+                            matchButton.setText("Matched");
+                        } else {
+                            // 其他状态
+                            matchButton.setText("Match");
+                        }
+                    } else {
+                        // 如果没有匹配请求文档，表示用户未在匹配状态中
+                        matchButton.setText("Available");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error checking matching status", e);
+                    Toast.makeText(MatchPageActivity.this, "Error checking matching status.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
     // 显示下一个用户
     private void showNextPerson() {
         if (currentIndex < matchedPersons.size() - 1) {
             currentIndex++;
             showPersonAtIndex(currentIndex);
+            checkMatchingStatus();
         } else {
             Toast.makeText(this, "No more matches.", Toast.LENGTH_SHORT).show();
         }
@@ -167,6 +226,7 @@ public class MatchPageActivity extends AppCompatActivity {
         if (currentIndex > 0) {
             currentIndex--;
             showPersonAtIndex(currentIndex);
+            checkMatchingStatus();
         } else {
             Toast.makeText(this, "This is the first match.", Toast.LENGTH_SHORT).show();
         }
@@ -200,13 +260,13 @@ public class MatchPageActivity extends AppCompatActivity {
         }
 
         // 设置按钮状态为“Matching”
-        matchButton.setText("Matching");
+        //matchButton.setText("Matching");
 
         // 创建并保存匹配请求到 Firebase
         MatchRequests matchRequest = new MatchRequests(currentUserId, matchedUserId, "pending");
         String documentName = currentUserId +"to"+matchedUserId;
         System.out.println(documentName);
-        db.collection("matchRequests")
+            db.collection("matchRequests")
                 .document(documentName)  // 使用自定义文档名称
                 .set(matchRequest)
                 .addOnSuccessListener(aVoid -> {
@@ -217,6 +277,7 @@ public class MatchPageActivity extends AppCompatActivity {
                     Log.e("Firestore", "Error saving match request", e);
                     Toast.makeText(MatchPageActivity.this, "Error sending match request.", Toast.LENGTH_SHORT).show();
                 });
+        checkMatchingStatus();
     }
 
 

@@ -23,6 +23,7 @@ import java.util.List;
 
 import comp5216.sydney.edu.au.link.R;
 import comp5216.sydney.edu.au.link.UserProfile;
+import comp5216.sydney.edu.au.link.landing.LoginActivity;
 
 public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnDeleteRequestListener,MatchAdapter.OnMatchRequestListener {
     private FirebaseFirestore db;
@@ -58,7 +59,10 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
         //insertSampleData();
         //insertSampleWithInterestAndPreferences();
         loadMRequestData();
-        //deleteAllMatchRequests();
+        //deleteAllMatchRequests();\
+
+
+
 
     }
     public String getCurrentUserId() {
@@ -66,7 +70,12 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
         if (currentUser != null) {
             return currentUser.getUid();
         } else {
-            Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+            /*Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+            return null;*/
+
+            Intent intent = new Intent(MatchActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
             return null;
         }
     }
