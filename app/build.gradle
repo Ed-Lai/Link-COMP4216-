@@ -60,5 +60,8 @@ dependencies {
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics'
 
+    // Import for navigation bar
+    implementation 'com.google.android.material:material:1.9.0'
+
 }
 

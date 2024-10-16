@@ -7,15 +7,22 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
-import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,14 +48,11 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.HashMap;
 
-import androidx.navigation.ui.AppBarConfiguration;
-import comp5216.sydney.edu.au.link.databinding.ActivityMainBinding;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
-
-
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -58,6 +62,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private Location currentLocation;
     private FirebaseFirestore firestore;
+    BottomNavigationView navBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +70,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_main);
       
         initFirestore();
-        testDatabase();
-        
 
         // Initialize the Places API
         Places.initialize(getApplicationContext(), "AIzaSyAA87EkKQ1JX341Q3fMnyrDd1UiCs19FI8");
@@ -89,6 +92,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
+
+        navBar = findViewById(R.id.navBar);
+        setupNavBarListener(navBar);
+
     }
     private void fetchLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -107,6 +114,30 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                     mMap.setMyLocationEnabled(true);
                 }
+            }
+        });
+    }
+
+    private void setupNavBarListener(BottomNavigationView navBar) {
+
+        navBar.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.navigation_home) {
+                    //startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    return true;
+                } else if (itemId == R.id.navigation_profile) {
+                    startActivity(new Intent(MainActivity.this, AccountPage.class));
+                    return true;
+                }
+
+                // TODO: add match page once completed
+//                else if (itemId == R.id.navigation_matches) {
+//                    startActivity(new Intent(MainActivity.this, EditProfilePage.class));
+//                    return true;
+//                }
+                return false;
             }
         });
     }
@@ -214,6 +245,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
             }).addOnFailureListener((exception) -> {
+                Log.e("Error:", exception.getMessage());
                 Toast.makeText(MainActivity.this, "Failed to get places: " + exception.getMessage(), Toast.LENGTH_LONG).show();
             });
         }
@@ -221,7 +253,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
-    protected void onStart () {
+    protected void onStart() {
         super.onStart();
 
         // Check if user is logged in (non-null) and update UI accordingly.
@@ -233,9 +265,18 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             startActivity(intent);
             finish();  // Close the MainActivity to prevent the user from returning to it
         } else {
-            // User is logged in, continue with showing the main content
-            Toast.makeText(this, "Welcome back, " + currentUser.getEmail(), Toast.LENGTH_SHORT).show();
+            String userId = currentUser.getUid();
+            getDocumentData("userProfiles", userId, data -> {
+                if (data != null) {
+                    String name = (String) data.get("name");
+                    // User is logged in, continue with showing the main content
+                    Toast toast = Toast.makeText(this, "Welcome back, " + name, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
         }
+
+        navBar.setSelectedItemId(R.id.navigation_home);
     }
 
     private void initFirestore(){
@@ -243,11 +284,26 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void testDatabase(){
-        HashMap<String, Object> testData = new HashMap<>();
-        testData.put("testKey", "testValue");
-
-        CollectionReference testCollection = firestore.collection("testCollection");
-        testCollection.add(testData);
+    private void getDocumentData(String collection, String document, FirestoreCallback callback) {
+        DocumentReference docRef = firestore.collection(collection).document(document);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                String errorTAG = "Error:";
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        callback.onCallback(document.getData());
+                    } else {
+                        Log.d(errorTAG, "No such document");
+                        callback.onCallback(null);
+                    }
+                } else {
+                    Log.d(errorTAG, "get failed with ", task.getException());
+                    callback.onCallback(null);
+                }
+            }
+        });
     }
+
 }
