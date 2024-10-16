@@ -10,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,6 +43,8 @@ public class MatchPageActivity extends AppCompatActivity {
     private String currentUserId;
     private String matchedUserId;
     private ImageButton imageButton;
+    private TextView genderText;
+    private RecyclerView interestView;
 
     private List<UserProfile> matchedPersons; // 用户数据列表
     private int currentIndex = 0; // 当前显示用户的索引
@@ -86,6 +90,8 @@ public class MatchPageActivity extends AppCompatActivity {
         matchButton = findViewById(R.id.match_matchButton);
         rightPersonButton = findViewById(R.id.rightperson);
         leftPersonButton = findViewById(R.id.leftperson);
+        genderText = findViewById(R.id.personGenderContent);
+        interestView = findViewById(R.id.interestRecyclerView);
         // 设置匹配用户信息
         loadMatchedUsers();
 
@@ -101,31 +107,6 @@ public class MatchPageActivity extends AppCompatActivity {
 
     }
 
-    /*private void loadMatchedUsers() {
-        if (currentUserId == null) {
-            Toast.makeText(this, "Current user ID is null. Cannot load matched users.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        db.collection("userProfiles")
-                .whereNotEqualTo("userId", currentUserId) // 确保 userId 是数据库中的字段名
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    matchedPersons.clear();
-                    for (QueryDocumentSnapshot document : querySnapshot) {
-                        UserProfile person = document.toObject(UserProfile.class);
-                        matchedPersons.add(person);
-                    }
-                    // 显示第一个用户
-                    if (!matchedPersons.isEmpty()) {
-                        showPersonAtIndex(currentIndex);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error loading matched users", e);
-                    Toast.makeText(this, "Error loading users info.", Toast.LENGTH_SHORT).show();
-                });
-    }*/
 
     private void loadMatchedUsers() {
         if (currentUserId == null) {
@@ -141,6 +122,8 @@ public class MatchPageActivity extends AppCompatActivity {
                         UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
                         if (currentUserProfile != null) {
                             ArrayList<String> personInMatchSet = currentUserProfile.getPersonInMatch();
+                            ArrayList<String> currentUserInterests = currentUserProfile.getInterests();
+
 
                             // 获取其他用户的信息
                             db.collection("userProfiles")
@@ -153,7 +136,15 @@ public class MatchPageActivity extends AppCompatActivity {
 
                                             // 检查该 person 是否已经存在于当前用户的匹配集合中
                                             if (personInMatchSet == null || !personInMatchSet.contains(person.getUserId())) {
-                                                matchedPersons.add(person);
+
+                                                ArrayList<String> otherUserInterests = person.getInterests();
+                                                int commonInterestCount = calculateCommonInterests(currentUserInterests, otherUserInterests);
+
+                                                // 只有在两人有一个以上的共同兴趣时，才将该用户添加到匹配列表
+                                                if (commonInterestCount > 0) {
+                                                    matchedPersons.add(person);
+                                                }
+                                                //matchedPersons.add(person);
                                             }
                                         }
                                         // 显示第一个用户
@@ -180,53 +171,6 @@ public class MatchPageActivity extends AppCompatActivity {
     }
 
 
-    /*private void loadMatchedUsers() {
-        // 获取当前用户的兴趣和偏好
-        db.collection("userProfiles").document(currentUserId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        UserProfile currentUser = documentSnapshot.toObject(UserProfile.class);
-                        String currentUserInterests = currentUser.getInterest();
-                        String currentUserPreferences = currentUser.getPreference();
-
-                        // 获取其他用户的信息
-                        db.collection("userProfiles")
-                                .whereNotEqualTo("userID", currentUserId) // 不包括当前用户
-                                .get()
-                                .addOnSuccessListener(querySnapshot -> {
-                                    matchedPersons.clear();
-                                    for (QueryDocumentSnapshot document : querySnapshot) {
-                                        UserProfile person = document.toObject(userProfiles.class);
-                                        String otherUserInterests = person.getInterest();
-                                        String otherUserPreferences = person.getPreference();
-
-                                        // 计算匹配度
-                                        int commonInterestCount = calculateCommonInterests(currentUserInterests, otherUserInterests);
-                                        int commonPreferenceCount = calculateCommonInterests(currentUserPreferences, otherUserPreferences);
-
-                                        // 如果匹配度满足条件，则添加到匹配列表
-                                        if (commonInterestCount > THRESHOLD && commonPreferenceCount > THRESHOLD) {
-                                            matchedPersons.add(person);
-                                        }
-                                    }
-                                    // 显示第一个用户
-                                    if (!matchedPersons.isEmpty()) {
-                                        showPersonAtIndex(currentIndex);
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.e("Firestore", "Error loading matched users", e);
-                                    Toast.makeText(this, "Error loading users info.", Toast.LENGTH_SHORT).show();
-                                });
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error loading current user", e);
-                    Toast.makeText(this, "Error loading current user info.", Toast.LENGTH_SHORT).show();
-                });
-    }*/
-
     private void checkMatchingStatus() {
         if (matchedPersons.isEmpty() || currentIndex < 0 || currentIndex >= matchedPersons.size()) {
             return;
@@ -245,16 +189,13 @@ public class MatchPageActivity extends AppCompatActivity {
                         if ("pending".equalsIgnoreCase(status)) {
                             // 如果匹配请求是 "pending"，则设置按钮状态为 "Matching"
                             matchButton.setText("Matching");
-                        } else if ("accepted".equalsIgnoreCase(status)) {
-                            // 如果匹配请求被接受，则设置按钮状态为 "Matched"
-                            matchButton.setText("Matched");
-                        } else {
+                        }else {
                             // 其他状态
                             matchButton.setText("Match");
                         }
                     } else {
                         // 如果没有匹配请求文档，表示用户未在匹配状态中
-                        matchButton.setText("Available");
+                        matchButton.setText("Match");
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -290,14 +231,25 @@ public class MatchPageActivity extends AppCompatActivity {
         UserProfile person = matchedPersons.get(index);
         matchedUserId = person.getUserId();
         matchName.setText(person.getName());
-
+        genderText.setText(person.getGender());
         // 使用 Glide 加载用户图片
         if (person.getProfilePictureUrl() != null && !person.getProfilePictureUrl().isEmpty()) {
             Glide.with(this).load(person.getProfilePictureUrl()).into(matchUserPhoto);
         } else {
             matchUserPhoto.setImageResource(R.drawable.default_image);
         }
+
+        ArrayList<String> interestsList = person.getInterests();
+        RecyclerView recyclerView = findViewById(R.id.interestRecyclerView);
+
+        // 创建并设置适配器
+        InterestsAdapter adapter = new InterestsAdapter(interestsList);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
+
+
+
     private String getCurrentUserId() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
@@ -334,10 +286,7 @@ public class MatchPageActivity extends AppCompatActivity {
     }
 
 
-    private int calculateCommonInterests(String interests1, String interests2) {
-
-        System.out.println("interests1: " + interests1);
-        System.out.println("interests2: " + interests2);
+    private int calculateCommonInterests(ArrayList<String> interests1, ArrayList<String> interests2) {
 
         // 如果有任何一个为 null 或为空，返回匹配度为 0
         if (interests1 == null || interests1.isEmpty() || interests2 == null || interests2.isEmpty()) {
@@ -345,9 +294,8 @@ public class MatchPageActivity extends AppCompatActivity {
         }
 
         // 将兴趣字符串按空格分隔并转换为集合
-        Set<String> set1 = new HashSet<>(Arrays.asList(interests1.split(" ")));
-        Set<String> set2 = new HashSet<>(Arrays.asList(interests2.split(" ")));
-        System.out.println();
+        Set<String> set1 = new HashSet<>(interests1);
+        Set<String> set2 = new HashSet<>(interests2);
 
         // 计算交集
         set1.retainAll(set2);

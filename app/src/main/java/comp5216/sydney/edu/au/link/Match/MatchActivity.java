@@ -239,41 +239,6 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
                 });
     }*/
 
-    private void insertSampleWithInterestAndPreferences() {
-        // 创建带有兴趣和偏好的示例用户
-        String interests1 = "Music Travel";
-        String preferences1 = "Running Reading";
-
-        UserProfile person1 = new UserProfile("1", "alice@example.com", "alice123", "Alice Johnson", "Female");
-        person1.setInterests(Arrays.asList(interests1.split(" ")));
-        person1.setPreferences(Arrays.asList(preferences1.split(" ")));
-
-        String interests2 = "Cooking Photography";
-        String preferences2 = "Movies Hiking";
-
-        UserProfile person2 = new UserProfile("user2", "bob@example.com", "bob456", "Bob Smith", "Male");
-        person2.setInterests(Arrays.asList(interests2.split(" ")));
-        person2.setPreferences(Arrays.asList(preferences2.split(" ")));
-
-        String interests3 = "Gaming Movies";
-        String preferences3 = "Concerts Running";
-
-        UserProfile person3 = new UserProfile("user3", "charlie@example.com", "charlie789", "Charlie Brown", "Male");
-        person3.setInterests(Arrays.asList(interests3.split(" ")));
-        person3.setPreferences(Arrays.asList(preferences3.split(" ")));
-
-        // 将数据插入到Firebase Firestore "matchpersons"
-        db.collection("userProfiles").document(person1.getUserId()).set(person1);
-        db.collection("userProfiles").document(person2.getUserId()).set(person2);
-        db.collection("userProfiles").document(person3.getUserId()).set(person3)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("Firestore", "Sample data with interests and preferences inserted successfully.");
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("Firestore", "Error inserting sample data with interests and preferences", e);
-                });
-    }
-
 
 
     private int calculateCommonInterests(String interests1, String interests2) {

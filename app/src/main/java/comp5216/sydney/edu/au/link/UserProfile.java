@@ -15,8 +15,8 @@ public class UserProfile {
     private int age;
     private String profilePictureUrl;
     private String location;
-    private List<String> interests;
-    private List<String> preferences;
+    private ArrayList<String> interests;
+    private ArrayList<String> preferences;
     private boolean isVisible;
     private String relationshipStatus;
     private ArrayList<String> personInMatch;
@@ -25,8 +25,8 @@ public class UserProfile {
             "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
     private static final int DEFAULT_AGE = 18;  // Default age
     private static final String DEFAULT_LOCATION = "Unknown";  // Default location
-    private static final List<String> DEFAULT_INTERESTS = new ArrayList<>();  // Default empty interests list
-    private static final List<String> DEFAULT_PREFERENCES = new ArrayList<>();  // Default empty preferences list
+    private static final ArrayList<String> DEFAULT_INTERESTS = new ArrayList<>();  // Default empty interests list
+    private static final ArrayList<String> DEFAULT_PREFERENCES = new ArrayList<>();  // Default empty preferences list
     private static final boolean DEFAULT_VISIBILITY = true;  // By default, user is visible
     private static final String DEFAULT_RELATIONSHIP_STATUS = "Single";  // Default relationship status
 
@@ -127,19 +127,19 @@ public class UserProfile {
         this.location = location;
     }
 
-    public List<String> getInterests() {
+    public ArrayList<String> getInterests() {
         return interests;
     }
 
-    public void setInterests(List<String> interests) {
+    public void setInterests(ArrayList<String> interests) {
         this.interests = interests;
     }
 
-    public List<String> getPreferences() {
+    public ArrayList<String> getPreferences() {
         return preferences;
     }
 
-    public void setPreferences(List<String> preferences) {
+    public void setPreferences(ArrayList<String> preferences) {
         this.preferences = preferences;
     }
 
