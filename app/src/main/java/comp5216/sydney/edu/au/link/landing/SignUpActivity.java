@@ -1,5 +1,7 @@
 package comp5216.sydney.edu.au.link.landing;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 
+import comp5216.sydney.edu.au.link.EditProfilePage;
 import comp5216.sydney.edu.au.link.R;
 import comp5216.sydney.edu.au.link.model.UserProfile;
 
@@ -69,6 +72,13 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+        inputGender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showGenderDialog(); // Call the method to show the Yes/No dialog
+            }
+        });
+
         // Create account button click event
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,41 +100,68 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
+    private void showGenderDialog() {
+        // Create an AlertDialog builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+        builder.setTitle("Select Gender");
+
+        // Define the visibility options
+        final String[] genderOptions = {"Male", "Female", "Other"};
+
+        // Set up the dialog to show the options as a list
+        builder.setItems(genderOptions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Get the selected visibility option
+                String selectedOption = genderOptions[which];
+
+                // Set the selected option to the EditText
+                inputGender.setText(selectedOption);
+            }
+        });
+        // Show the dialog
+        builder.show();
+    }
 
     public boolean isSignUpValid(String email, String username, String password, String name, String gender) {
-
         // Check if any field is empty
         if (email.isEmpty() || username.isEmpty() || password.isEmpty() || name.isEmpty() || gender.isEmpty()) {
-            // Notify the user to fill out all fields
+            Toast.makeText(this, "All fields are required.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         // Check if email format is valid
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            // Notify the user about invalid email format
+            Toast.makeText(this, "Invalid email format.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        // Check if password length is at least 6 characters
+        // Check if username is a valid variable-like name (letters, digits, underscores)
+        if (!username.matches("^[a-zA-Z_$][a-zA-Z\\d_$]*$")) {
+            Toast.makeText(this, "Invalid username.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Check if password length is at least 6 characters and doesn't contain spaces
         if (password.length() < 6) {
-            // Notify the user that the password should be at least 6 characters
+            Toast.makeText(this, "Password must be at least 6 characters long.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (password.contains(" ")) {
+            Toast.makeText(this, "Password should not contain spaces.", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        // Optionally, add more rules for username, name, or gender if needed
-        if (username.length() < 3) {
-            // Notify the user that the username should be at least 3 characters
+        // Trim leading and trailing spaces in the name and check if it's a valid name (only letters and spaces)
+        name = name.trim();
+        if (!name.matches("^[a-zA-Z\\s]+$")) {
+            Toast.makeText(this, "Name can only contain letters and spaces.", Toast.LENGTH_SHORT).show();
             return false;
         }
-
-        if (!gender.equalsIgnoreCase("Male") && !gender.equalsIgnoreCase("Female")) {
-            // Notify the user that the gender should be Male or Female
-            return false;
-        }
-
         // If all checks passed, return true
         return true;
     }
+
 
 
     // Logic to create a new account, can be further implemented later

@@ -129,7 +129,8 @@
         android:hint="******************"
         android:textColorHint="#686363"
         android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:inputType="textPassword"/>
 
     <!-- Name Label -->
     <TextView
@@ -179,7 +180,9 @@
         android:hint="Male/Female"
         android:textColorHint="#686363"
         android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:focusable="false"
+        android:clickable="true"/>
 
     <!-- Create New Account Button -->
     <Button

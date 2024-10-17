@@ -298,7 +298,8 @@ public class PrefSetting extends AppCompatActivity {
 
         // Create an Intent to return the result to EditProfilePage
         Intent resultIntent = new Intent();
-        resultIntent.putExtra("updatedPreference", shortenedPreferences.toString());
+        resultIntent.putExtra("showPreference", shortenedPreferences.toString());
+        resultIntent.putExtra("updatedPreference", fullPreferences);
 
         // Set the result to RESULT_OK and finish the activity
         setResult(RESULT_OK, resultIntent);

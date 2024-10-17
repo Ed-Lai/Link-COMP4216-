@@ -33,6 +33,7 @@
         android:layout_below="@id/username"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="40dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/default_profile_picture"
         android:contentDescription="Profile Image" />
 

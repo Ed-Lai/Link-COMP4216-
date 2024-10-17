@@ -13,6 +13,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:src="@drawable/default_profile_picture"
+        android:scaleType="centerCrop"
         android:contentDescription="Profile Image" />
 
     <!-- Edit Picture Button -->

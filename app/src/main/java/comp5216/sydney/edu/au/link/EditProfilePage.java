@@ -5,7 +5,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +26,9 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +38,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -45,38 +54,27 @@ import comp5216.sydney.edu.au.link.model.UserProfile;
 
 public class EditProfilePage extends AppCompatActivity {
 
-    private EditText nameText, usernameText, genderText, ageInput, locationInput, inputRelationshipStatus, inputVisible, inputPreference, inputInterets;
+    private EditText nameText, usernameText, genderText, ageInput, locationInput,
+            inputRelationshipStatus, inputVisible, inputPreference, inputInterets;
     private ImageView backButton, userPhotoView;
-    private String userId;
-    private UserProfile currentUserProfile;;
+    private Button editPicture;
+    private String userId, fullname, username, gender, age, hometown,
+            relationshipStatus, preference, photoUrl, interests;
+    private String tempImageUrl;
+    private boolean isVisible;
+    private SharedPreferences userSP;
+    private static final int REQUEST_IMAGE_PICK = 1000;
+    private static final int REQUEST_STORAGE_PERMISSION = 2000;
 
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.edit_profile);  // Load your edit_profile.xml layout
+        userSP = getSharedPreferences("UserProfilePrefs", MODE_PRIVATE);
+        loadUserProfileFromSharedPreferences();
+    }
 
-        // Initialize the EditText fields
-        nameText = findViewById(R.id.input_name);
-        usernameText = findViewById(R.id.input_username);
-        genderText = findViewById(R.id.input_gender);
-        backButton = findViewById(R.id.back_button);
-        ageInput = findViewById(R.id.input_age);//// Assuming you have a save button in your layout
-        locationInput = findViewById(R.id.input_hometown);
-        inputRelationshipStatus = findViewById(R.id.input_relationshipStatus);
-        inputVisible = findViewById(R.id.input_visible);
-        inputPreference = findViewById(R.id.input_preference);
-        inputInterets = findViewById(R.id.input_interests);
-        userPhotoView = findViewById(R.id.profile_image);
-
-        if (currentUserProfile == null) {
-            currentUserProfile = new UserProfile();
-        }
-
-        currentUserProfile = getIntent().getParcelableExtra("userProfile");
-        userId = currentUserProfile.getUserId();
-        setUI();
-
+    private void setClickListener() {
         locationInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,19 +115,80 @@ public class EditProfilePage extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an Intent to navigate to AccountPage
-                Intent intent = new Intent(EditProfilePage.this, AccountPage.class);
-                intent.putExtra("userProfile", currentUserProfile);
-                // Start the AccountPage activity
-                startActivity(intent);
-
-                // Optional: Close the current activity
-                finish();
+                new AlertDialog.Builder(EditProfilePage.this)
+                        .setTitle("Unsaved Changes")
+                        .setMessage("Your changes are not saved. Are you sure you want to exit?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
             }
         });
+        editPicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestStoragePermission();
+            }
+        });
+    }
 
+    private void loadUserProfileFromSharedPreferences() {
+
+        userId = userSP.getString("userId", "");
+        fullname = userSP.getString("name", "");
+        username = userSP.getString("username", "");
+        gender = userSP.getString("gender", "");
+        age = userSP.getString("age", "");
+        hometown = userSP.getString("location", "");
+        relationshipStatus = userSP.getString("relationshipStatus", "");
+        isVisible = userSP.getBoolean("visible", true);
+        preference = userSP.getString("preference", "");
+        photoUrl = userSP.getString("photoUrl", "");
+        interests = userSP.getString("interests", "");
+        setUI();
 
     }
+    private void setUI() {
+
+        setContentView(R.layout.edit_profile);  // Load your edit_profile.xml layout
+
+        // Initialize the EditText fields
+        nameText = findViewById(R.id.input_name);
+        usernameText = findViewById(R.id.input_username);
+        genderText = findViewById(R.id.input_gender);
+        backButton = findViewById(R.id.back_button);
+        ageInput = findViewById(R.id.input_age);//// Assuming you have a save button in your layout
+        locationInput = findViewById(R.id.input_hometown);
+        inputRelationshipStatus = findViewById(R.id.input_relationshipStatus);
+        inputVisible = findViewById(R.id.input_visible);
+        inputPreference = findViewById(R.id.input_preference);
+        inputInterets = findViewById(R.id.input_interests);
+        userPhotoView = findViewById(R.id.profile_image);
+        editPicture = findViewById(R.id.edit_picture_button);
+
+        setClickListener();
+
+        nameText.setText(fullname);
+        usernameText.setText(username);
+        genderText.setText(gender);
+        String ageString = String.valueOf(age);
+        ageInput.setText(ageString);
+        locationInput.setText(hometown);
+        inputRelationshipStatus.setText(relationshipStatus);
+        inputVisible.setText(isVisible ? "Yes" : "No");
+        inputPreference.setText(preference);
+        inputInterets.setText(interests);
+        Glide.with(this)
+                .load(photoUrl)
+                .centerCrop()
+                .placeholder(R.drawable.default_profile_picture)
+                .into(userPhotoView);
+    }
+
 
     public void backAndSaveChanges(View view) {
         // Show a confirmation dialog before saving
@@ -155,44 +214,35 @@ public class EditProfilePage extends AppCompatActivity {
         progressDialog.setMessage("Saving changes...");
         progressDialog.setCancelable(false);
         progressDialog.show();  // Show the progress dialog
-
-        // Get the text input from EditText fields
-        String updatedName = nameText.getText().toString();
-        String updatedUsername = usernameText.getText().toString();
-        String updatedGender = genderText.getText().toString();
-        String updatedAge = ageInput.getText().toString();
-        int updatedIntAge = Integer.parseInt(updatedAge);
-        String updatedHometown = locationInput.getText().toString();
-        String updatedStatus = inputRelationshipStatus.getText().toString();
-        String updatedPref = inputPreference.getText().toString();
-        String updatedVisible = inputVisible.getText().toString();
-        boolean updatedBoolVisible = updatedVisible.equals("Yes");
-        String updatedInterests = inputInterets.getText().toString();
+        SharedPreferences.Editor editor = userSP.edit();
 
         // Get current user's ID (assuming user is logged in)
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         // Create a map to hold the updated user data
         Map<String, Object> updatedData = new HashMap<>();
-        updatedData.put("name", updatedName);
-        updatedData.put("username", updatedUsername);
-        updatedData.put("gender", updatedGender);
-        updatedData.put("age", updatedIntAge);
-        updatedData.put("interests", updatedInterests);
-        updatedData.put("hometown", updatedHometown);
-        updatedData.put("relationshipStatus", updatedStatus);
-        updatedData.put("preferences", updatedPref);
-        updatedData.put("isVisible", updatedBoolVisible);
 
-        currentUserProfile.setName(updatedName);
-        currentUserProfile.setUsername(updatedUsername);
-        currentUserProfile.setGender(updatedGender);
-        currentUserProfile.setAge(updatedIntAge);
-        currentUserProfile.setInterests(updatedInterests);
-        currentUserProfile.setHometown(updatedHometown);
-        currentUserProfile.setRelationshipStatus(updatedStatus);
-        currentUserProfile.setPreferences(updatedPref);
-        currentUserProfile.setVisible(updatedBoolVisible);
+        updatedData.put("name", nameText.getText().toString());
+        editor.putString("name", nameText.getText().toString());
+        updatedData.put("username", usernameText.getText().toString());
+        editor.putString("username", usernameText.getText().toString());
+        updatedData.put("gender", genderText.getText().toString());
+        editor.putString("gender", genderText.getText().toString());
+        updatedData.put("age", Integer.parseInt(ageInput.getText().toString()));
+        editor.putString("age", ageInput.getText().toString());
+        updatedData.put("interests", inputInterets.getText().toString());
+        editor.putString("interests", inputInterets.getText().toString());
+        updatedData.put("hometown", locationInput.getText().toString());
+        editor.putString("hometown", locationInput.getText().toString());
+        updatedData.put("relationshipStatus", inputRelationshipStatus.getText().toString());
+        editor.putString("relationshipStatus", inputRelationshipStatus.getText().toString());
+        updatedData.put("preferences", preference);
+        editor.putString("preference", inputPreference.getText().toString());
+        updatedData.put("isVisible", inputVisible.getText().toString().equals("Yes"));
+        editor.putBoolean("visible", inputVisible.getText().toString().equals("Yes"));
+        updatedData.put("profilePictureUrl", tempImageUrl);
+        editor.putString("photoUrl", tempImageUrl);
+        editor.apply();
 
         // Reference to the Firestore document
         DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("userProfiles").document(userId);
@@ -206,7 +256,6 @@ public class EditProfilePage extends AppCompatActivity {
                     // Return to AccountPage
                     Toast.makeText(EditProfilePage.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
                     Intent resultIntent = new Intent(EditProfilePage.this, AccountPage.class);
-                    resultIntent.putExtra("userProfile", currentUserProfile);
                     startActivity(resultIntent);
                     finish();  // Close the current activity
                 })
@@ -216,6 +265,55 @@ public class EditProfilePage extends AppCompatActivity {
                     Toast.makeText(EditProfilePage.this, "Failed to update profile: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
+
+    private void requestStoragePermission() {
+            openImagePicker();
+    }
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQUEST_IMAGE_PICK);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_PICK && resultCode == RESULT_OK && data != null) {
+            Uri selectedImageUri = data.getData();
+            uploadImageToFirebase(selectedImageUri);  // Upload the selected image
+        }
+    }
+    private void uploadImageToFirebase(Uri fileUri) {
+        // Show progress dialog
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        // Reference to Firebase storage
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        final StorageReference ref = storageRef.child("UserImages/" + fileUri.getLastPathSegment());
+        UploadTask uploadTask = ref.putFile(fileUri);
+
+        // Get the URL once upload completes
+        uploadTask.continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            return ref.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            progressDialog.dismiss();  // Hide the progress dialog
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
+                tempImageUrl = downloadUri.toString();
+                updateImageView(downloadUri);  // Update the image view with the uploaded image
+            } else {
+                Toast.makeText(this, "Upload failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void updateImageView(Uri imageUri) {
+        Glide.with(this).load(imageUri).centerCrop().into(userPhotoView);  // Load the image into ImageView
+    }
+
+
 
     private void showCountryCityDialog() {
         // First, ask if the user is from Australia
@@ -465,33 +563,18 @@ public class EditProfilePage extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     // Get the updated preferences from the result intent
-                    String updatedPreference = result.getData().getStringExtra("updatedPreference");
+                    String showPreference = result.getData().getStringExtra("showPreference");
+                    preference = result.getData().getStringExtra("updatedPreference");
 
                     // Update the inputPreference EditText with the returned value
-                    inputPreference.setText(updatedPreference);
+                    inputPreference.setText(showPreference);
                 }
             }
     );
 
 
 
-    private void setUI() {
 
-        nameText.setText(currentUserProfile.getName());
-        usernameText.setText(currentUserProfile.getUsername());
-        genderText.setText(currentUserProfile.getGender());
-        String ageString = String.valueOf(currentUserProfile.getAge());
-        ageInput.setText(ageString);
-        locationInput.setText(currentUserProfile.getHometown());
-        inputRelationshipStatus.setText(currentUserProfile.getRelationshipStatus());
-        inputVisible.setText(currentUserProfile.isVisible() ? "Yes" : "No");
-        inputPreference.setText(currentUserProfile.getPreferences());
-        inputInterets.setText(currentUserProfile.getInterests());
-        Glide.with(this)
-                .load(currentUserProfile.getProfilePictureUrl())
-                .placeholder(R.drawable.default_profile_picture)
-                .into(userPhotoView);
-    }
 
 
 
