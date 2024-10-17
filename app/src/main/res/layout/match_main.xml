@@ -17,6 +17,7 @@
         android:layout_margin="16dp"
         android:contentDescription="Go back" />
 
+
     <!-- 用户头像 -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/match_userphoto"
@@ -101,7 +102,7 @@
         android:id="@+id/personGenderContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Female"
+        android:text="Male/Female"
         app:layout_constraintTop_toTopOf="@id/personGender"
         app:layout_constraintStart_toEndOf="@id/personGender"
         android:layout_marginStart="4dp"
@@ -130,7 +131,30 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
+    <Button
+        android:id="@+id/receivedRequestsButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Received Requests"
+        app:layout_constraintTop_toBottomOf="@id/interestRecyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
+    <!-- 按钮：我已经接受的请求 -->
+    <Button
+        android:id="@+id/acceptedRequestsButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Accepted Requests"
+        app:layout_constraintTop_toBottomOf="@id/receivedRequestsButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

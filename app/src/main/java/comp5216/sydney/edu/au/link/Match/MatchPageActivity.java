@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import comp5216.sydney.edu.au.link.MainActivity;
 import comp5216.sydney.edu.au.link.R;
 import comp5216.sydney.edu.au.link.UserProfile;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
@@ -52,6 +53,8 @@ public class MatchPageActivity extends AppCompatActivity {
 
     private ImageButton rightPersonButton;
     private ImageButton leftPersonButton;
+    private Button receivedRequestsButton;
+    private Button acceptedRequestsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +80,25 @@ public class MatchPageActivity extends AppCompatActivity {
         imageButton = findViewById(R.id.match_gobackimageButton);
         imageButton.setOnClickListener(v -> {
             // Create an Intent to jump to MatchMainActivity
+            Intent intent = new Intent(MatchPageActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
+
+        receivedRequestsButton = findViewById(R.id.receivedRequestsButton);
+        receivedRequestsButton.setOnClickListener(v -> {
+            // Create an Intent to jump to MatchMainActivity
+            Intent intent = new Intent(MatchPageActivity.this, MatchActivity.class);
+            startActivity(intent);
+        });
+
+        acceptedRequestsButton = findViewById(R.id.acceptedRequestsButton);
+        acceptedRequestsButton.setOnClickListener(v -> {
+            // Create an Intent to jump to MatchMainActivity
             Intent intent = new Intent(MatchPageActivity.this, MatchSuccessActivity.class);
             startActivity(intent);
         });
+
+
 
         // Initializing UI components
         matchName = findViewById(R.id.match_name);

@@ -48,7 +48,7 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
         listView = findViewById(R.id.match_success_listview);
         imageButton = findViewById(R.id.match_success_gobackimageButton);
         imageButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MatchSuccessActivity.this, MatchActivity.class);
+            Intent intent = new Intent(MatchSuccessActivity.this, MatchPageActivity.class);
             startActivity(intent);
         });
 
@@ -148,36 +148,36 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
         if (currentUser != null) {
             String currentUserId = currentUser.getUid();
 
-            // 首先获取当前用户的 userProfile
+            //First get the current user's userProfile
             db.collection("userProfiles").document(currentUserId)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
                             UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
                             if (currentUserProfile != null && person != null) {
-                                // 从 personInMatch 列表中移除此用户
+                                // Remove this user from the personInMatch list
                                 currentUserProfile.deletePersonInMatch(person.getUserId());
 
-                                // 更新 userProfiles 的 personInMatch 列表
+                                //Update the list of personInMatch in userProfiles.
                                 db.collection("userProfiles").document(currentUserId)
                                         .set(currentUserProfile)
                                         .addOnSuccessListener(aVoid1 -> {
                                             Log.d("Firestore", "UserProfile updated successfully, person removed from personInMatch.");
 
-                                            // 检查 documentName1 是否存在
+                                            // Check if documentName1 exists
                                             db.collection("matchRequests").document(documentName1)
                                                     .get()
                                                     .addOnSuccessListener(documentSnapshot1 -> {
                                                         if (documentSnapshot1.exists()) {
-                                                            // 如果 documentName1 存在，更新 status 为 cancel
+                                                            //"If documentName1 exists, update status to cancel."
                                                             updateMatchRequestStatus(documentName1, person);
                                                         } else {
-                                                            // 如果 documentName1 不存在，检查 documentName2
+                                                            // If documentName1 does not exist, check documentName2
                                                             db.collection("matchRequests").document(documentName2)
                                                                     .get()
                                                                     .addOnSuccessListener(documentSnapshot2 -> {
                                                                         if (documentSnapshot2.exists()) {
-                                                                            // 如果 documentName2 存在，更新 status 为 cancel
+                                                                            // Update status to cancel if documentName2 exists.
                                                                             updateMatchRequestStatus(documentName2, person);
                                                                         } else {
                                                                             Log.e("Firestore", "Match request document not found.");
@@ -197,11 +197,11 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
     }
 
     private void updateMatchRequestStatus(String documentName, UserProfile person) {
-        // 更新 matchRequests 文档的 status 为 cancel
+        // Update the status of the matchRequests document to cancel
         db.collection("matchRequests").document(documentName)
                 .update("status", "cancel")
                 .addOnSuccessListener(aVoid2 -> {
-                    // 从本地列表中移除 person 并更新 UI
+                    // Remove the person from the local list and update the UI
                     matchPersonList.remove(person);
                     adapter.notifyDataSetChanged();
                     Toast.makeText(this, "Match request status updated to 'cancel'", Toast.LENGTH_SHORT).show();

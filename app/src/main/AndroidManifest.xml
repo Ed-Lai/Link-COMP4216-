@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE" />
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -20,7 +18,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAA87EkKQ1JX341Q3fMnyrDd1UiCs19FI8"/>
         <activity
-            android:name=".landing.LoginActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Link">
             <intent-filter>
@@ -29,13 +27,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        <activity android:name=".landing.LoginActivity"></activity>-->
-<!--        <activity android:name=".landing.LoginActivity" />-->
+
+        <!-- AccountPage activity declaration -->
+        <activity
+            android:name=".AccountPage"
+            android:exported="true"
+            android:theme="@style/Theme.Link" />
+
+        <!-- EditProfilePage activity declaration -->
+        <activity
+            android:name=".EditProfilePage"
+            android:exported="true"
+            android:theme="@style/Theme.Link" />
+
+        <activity android:name=".landing.LoginActivity" />
         <activity android:name=".landing.SignUpActivity" />
         <activity android:name=".VenueDetailActivity" />
-        <activity android:name=".Match.MatchPageActivity" />
-        <activity android:name=".Match.MatchSuccessActivity" />
-        <activity android:name=".Match.MatchActivity" />
+        <activity android:name=".Match.MatchActivity"/>
+        <activity android:name=".Match.MatchSuccessActivity"/>
+        <activity android:name=".Match.MatchPageActivity"/>
     </application>
 
 </manifest>
