@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/background_gradient">
 
     <!-- Header -->
@@ -18,7 +19,7 @@
         android:text="Login"
         android:textColor="#FFFFFF"
         android:textSize="35dp"
-        android:textStyle="bold" />
+        android:textStyle="normal" />
 
     <TextView
         android:id="@+id/label_email"
@@ -41,7 +42,7 @@
         android:layout_marginTop="280dp"
         android:textColor="#FFFFFF"
         android:hint="myname@gmail.com"
-        android:textColorHint="#FFFFFF"
+        android:textColorHint="#686363"
         android:background="@android:color/transparent"/>
 
     <!-- Password Label -->
@@ -68,7 +69,7 @@
         android:layout_marginTop="30dp"
         android:textColor="#FFFFFF"
         android:hint="**********"
-        android:textColorHint="#FFFFFF"
+        android:textColorHint="#686363"
         android:background="@android:color/transparent"
         android:inputType="textPassword"/>
 
@@ -77,12 +78,12 @@
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:layout_marginTop="400dp"
+        android:layout_marginTop="480dp"
         android:layout_centerHorizontal="true"
         android:backgroundTint="#47A6FE"
         android:text="Log In to Exsiting Account"
         android:textSize="18dp"
-        android:textStyle="bold"
+        android:textStyle="normal"
         android:textColor="#FFFFFF" />
 
     <!-- Register Link -->
@@ -112,6 +113,17 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
         android:scaleType="centerInside"/>
+
+    <ImageView
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/back_button"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/bar"
+        android:scaleType="fitXY"
+        android:layout_centerHorizontal="true"
+        app:tint="@color/places_autocomplete_error_message" />
 
 
 

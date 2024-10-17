@@ -2,7 +2,6 @@ package comp5216.sydney.edu.au.link;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -13,24 +12,18 @@ import android.location.Location;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,8 +48,10 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,11 +71,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private VenueAdapter venueAdapter;
     private SearchView searchBar;
 
+    private FirebaseUser currentUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-      
+
         initFirestore();
 
         // Initialize the Places API
@@ -104,15 +100,32 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
-
-        navBar = findViewById(R.id.navBar);
-        setupNavBarListener(navBar);
-
         venueList = new ArrayList<>();
 
         filteredList = new ArrayList<>(venueList);
 
         venueAdapter = new VenueAdapter(filteredList);
+        venueAdapter.setOnItemClickListener(new VenueAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Place place) {
+                // Create an intent to start the new activity
+                Intent intent = new Intent(MainActivity.this, VenueDetailActivity.class);
+                intent.putExtra("placeName", place.getName());
+                intent.putExtra("address", place.getAddress());
+
+                // Format opening hours
+                String openingHoursFormatted = formatOpeningHours(place.getOpeningHours());
+                intent.putExtra("openingHours", openingHoursFormatted);
+
+                // Fetch and pass the photo metadata
+                if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
+                    PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);  // Get the first photo
+                    intent.putExtra("photoMetadata", photoMetadata);
+                }
+
+                startActivity(intent);
+            }
+        });
 
         recyclerView = findViewById(R.id.places);
 
@@ -120,12 +133,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         recyclerView.setAdapter(venueAdapter);
 
-
-
-
         setupSearch();
 
-
+        setupNavigationButtons();
     }
     private void fetchLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -144,30 +154,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                     mMap.setMyLocationEnabled(true);
                 }
-            }
-        });
-    }
-
-    private void setupNavBarListener(BottomNavigationView navBar) {
-
-        navBar.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-                if (itemId == R.id.navigation_home) {
-                    //startActivity(new Intent(MainActivity.this, MainActivity.class));
-                    return true;
-                } else if (itemId == R.id.navigation_profile) {
-                    startActivity(new Intent(MainActivity.this, AccountPage.class));
-                    return true;
-                }
-
-                // TODO: add match page once completed
-//                else if (itemId == R.id.navigation_matches) {
-//                    startActivity(new Intent(MainActivity.this, EditProfilePage.class));
-//                    return true;
-//                }
-                return false;
             }
         });
     }
@@ -229,51 +215,37 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+    }
 
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+    private void setupNavigationButtons() {
+        // Home button click event
+        ImageView homeButton = findViewById(R.id.nav_home);
+        homeButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onMapClick(LatLng latLng) {
-                recyclerView.setVisibility(View.GONE);
-                changeCornerRadius(searchBar, "closed");
-                hideKeyboard();
+            public void onClick(View v) {
             }
         });
 
+        // Notification button click event
+        ImageView notificationButton = findViewById(R.id.nav_notification);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+//                startActivity(intent);
+            }
+        });
+
+        // Profile button click event
+        ImageView profileButton = findViewById(R.id.nav_profile);
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AccountPage.class);
+                startActivity(intent);
+            }
+        });
     }
-
-    private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        View view = getCurrentFocus();
-        if (view != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
-    public void onItemClick(Place place) {
-        // Create an intent to start the new activity
-        Intent intent = new Intent(MainActivity.this, VenueDetailActivity.class);
-        intent.putExtra("placeName", place.getName());
-        intent.putExtra("address", place.getAddress());
-
-        // Format opening hours
-        String openingHoursFormatted = formatOpeningHours(place.getOpeningHours());
-        intent.putExtra("openingHours", openingHoursFormatted);
-
-        // Fetch and pass the photo metadata
-        if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
-            PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);  // Get the first photo
-            intent.putExtra("photoMetadata", photoMetadata);
-        }
-
-        startActivity(intent);
-    }
-
-
-    public void loadProfile(View view){
-        Intent intent = new Intent(MainActivity.this, AccountPage.class);
-        startActivity(intent);
-    }
-
 
     private String formatOpeningHours (OpeningHours openingHours){
         if (openingHours == null || openingHours.getWeekdayText() == null) {
@@ -285,7 +257,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         }
         return formattedHours.toString();
     }
-
 
     private void fetchNearbyPlaces (Location location){
         List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ID, Place.Field.TYPES, Place.Field.ADDRESS); // Add Place.TYPES field
@@ -328,7 +299,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStart();
 
         // Check if user is logged in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
             // User is not logged in, redirect to the LoginActivity
@@ -336,18 +307,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             startActivity(intent);
             finish();  // Close the MainActivity to prevent the user from returning to it
         } else {
-            String userId = currentUser.getUid();
-            getDocumentData("userProfiles", userId, data -> {
-                if (data != null) {
-                    String name = (String) data.get("name");
-                    // User is logged in, continue with showing the main content
-                    Toast toast = Toast.makeText(this, "Welcome back, " + name, Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-            });
-        }
 
-        navBar.setSelectedItemId(R.id.navigation_home);
+        }
     }
 
     private void initFirestore(){
@@ -355,27 +316,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void getDocumentData(String collection, String document, FirestoreCallback callback) {
-        DocumentReference docRef = firestore.collection(collection).document(document);
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                String errorTAG = "Error:";
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        callback.onCallback(document.getData());
-                    } else {
-                        Log.d(errorTAG, "No such document");
-                        callback.onCallback(null);
-                    }
-                } else {
-                    Log.d(errorTAG, "get failed with ", task.getException());
-                    callback.onCallback(null);
-                }
-            }
-        });
-    }
 
     private void setupSearch() {
         searchBar = findViewById(R.id.searchBar);
