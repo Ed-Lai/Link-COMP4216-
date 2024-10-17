@@ -4,6 +4,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.location.Location;
 
 import android.os.Bundle;
@@ -14,7 +18,9 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -41,6 +47,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
@@ -93,6 +100,40 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
+        venueList = new ArrayList<>();
+
+        filteredList = new ArrayList<>(venueList);
+
+        venueAdapter = new VenueAdapter(filteredList);
+        venueAdapter.setOnItemClickListener(new VenueAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Place place) {
+                // Create an intent to start the new activity
+                Intent intent = new Intent(MainActivity.this, VenueDetailActivity.class);
+                intent.putExtra("placeName", place.getName());
+                intent.putExtra("address", place.getAddress());
+
+                // Format opening hours
+                String openingHoursFormatted = formatOpeningHours(place.getOpeningHours());
+                intent.putExtra("openingHours", openingHoursFormatted);
+
+                // Fetch and pass the photo metadata
+                if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
+                    PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);  // Get the first photo
+                    intent.putExtra("photoMetadata", photoMetadata);
+                }
+
+                startActivity(intent);
+            }
+        });
+
+        recyclerView = findViewById(R.id.places);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        recyclerView.setAdapter(venueAdapter);
+
+        setupSearch();
 
         setupNavigationButtons();
     }

@@ -69,10 +69,6 @@
     android:contentDescription="Profile" />
 </LinearLayout>
 
-    </RelativeLayout>
-        android:layout_height="match_parent"
-        />
-
     <SearchView
         android:id="@+id/searchBar"
         android:layout_width="match_parent"

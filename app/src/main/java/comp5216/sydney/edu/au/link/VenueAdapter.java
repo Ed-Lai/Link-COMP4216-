@@ -46,7 +46,9 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.VenueViewHol
 
         holder.itemView.setOnClickListener(v -> {
             // Trigger the click listener and pass the clicked place
-            listener.onItemClick(place);
+            if (listener != null) {
+                listener.onItemClick(place);
+            }
         });
     }
 
@@ -72,5 +74,9 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.VenueViewHol
     public void filterList(List<Place> filteredVenues) {
         this.placeList = filteredVenues;
         notifyDataSetChanged();
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }
