@@ -46,6 +46,7 @@ public class AccountPage extends AppCompatActivity {
         // Start the EditProfile activity and expect a result
         Intent intent = new Intent(AccountPage.this, EditProfilePage.class);
         startActivity(intent);
+        finish();
     }
 
     // Optional: Method to handle back button

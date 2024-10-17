@@ -107,6 +107,8 @@ public class EditProfilePage extends AppCompatActivity {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(EditProfilePage.this, AccountPage.class);
+                                startActivity(intent);
                                 finish();
                             }
                         })
