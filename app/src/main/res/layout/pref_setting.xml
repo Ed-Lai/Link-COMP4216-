@@ -5,28 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient">
 
-    <ImageView
-        android:id="@+id/profile_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_below="@id/line"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/default_profile_picture"
-        android:contentDescription="Profile Image" />
 
-    <!-- Edit Picture Button -->
-    <Button
-        android:id="@+id/edit_picture_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/profile_image"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:text="Edit picture"
-        android:textColor="#47A6FE"
-        android:textStyle="normal"
-        android:background="@android:color/transparent" />
 
     <!-- Back Button -->
     <ImageView
@@ -38,7 +17,6 @@
         android:contentDescription="Back Button"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
-        android:onClick="backAndSaveChanges"
         android:scaleType="centerInside" />
 
     <!-- Done Button (Top Right) -->
@@ -52,7 +30,6 @@
         android:focusable="true"
         android:text="DONE"
         android:textColor="#47A6FE"
-        android:onClick="backAndSaveChanges"
         android:textSize="15sp"
         android:background="@drawable/register_button"
         android:backgroundTint="@null"
@@ -69,75 +46,37 @@
         android:layout_centerHorizontal="true"
         app:tint="@color/places_autocomplete_error_message" />
 
-    <!-- Header: Edit Profile -->
+    <!-- Header: Preference -->
     <TextView
         android:id="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
-        android:text="Edit Profile"
+        android:text="Preference"
         android:textSize="24sp"
         android:textColor="#FFFFFF"
         android:textStyle="normal" />
 
-    <!-- Name Label -->
     <TextView
-        android:id="@+id/label_name"
-        android:layout_width="wrap_content"
+        android:id="@+id/hint_info"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="230dp"
-        android:layout_alignBaseline="@id/input_name"
-        android:text="Name"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/line"
+        android:layout_marginTop="50dp"
+        android:text="What Kind People You Want To Link Tonight?"
+        android:textSize="24sp"
         android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="normal" />
-
-    <!-- Name Input -->
-    <EditText
-        android:id="@+id/input_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/edit_picture_button"
-        android:layout_marginStart="150dp"
-        android:layout_marginTop="10dp"
-        android:hint="First Last"
-        android:textColorHint="#FFFFFF"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
-
-    <!-- Username Label -->
-    <TextView
-        android:id="@+id/label_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/input_username"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="20dp"
-        android:text="Username"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="normal" />
-
-    <!-- Username Input -->
-    <EditText
-        android:id="@+id/input_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="150dp"
-        android:layout_below="@id/input_name"
-        android:hint="Your_User_name"
-        android:textColorHint="#FFFFFF"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        android:textStyle="normal"
+        android:gravity="center"/>
 
     <!-- Age Label -->
     <TextView
         android:id="@+id/label_age"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/input_age"
+        android:layout_alignBaseline="@id/input_age1"
         android:layout_marginStart="35dp"
         android:layout_marginTop="20dp"
         android:text="Age"
@@ -147,11 +86,39 @@
 
     <!-- Age Input -->
     <EditText
-        android:id="@+id/input_age"
+        android:id="@+id/input_age1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="150dp"
-        android:layout_below="@id/input_username"
+        android:layout_marginTop="200dp"
+        android:layout_below="@id/line"
+        android:hint="18"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:focusable="false"
+        android:clickable="true"/>
+
+    <TextView
+        android:id="@+id/break_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/input_age1"
+        android:layout_marginStart="184dp"
+        android:layout_marginTop="20dp"
+        android:text="-"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="normal" />
+
+    <!-- Age Input -->
+    <EditText
+        android:id="@+id/input_age2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="200dp"
+        android:layout_marginTop="200dp"
+        android:layout_below="@id/line"
         android:hint="18"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
@@ -177,9 +144,9 @@
         android:id="@+id/input_interests"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/input_age"
+        android:layout_below="@id/input_age1"
         android:layout_marginStart="150dp"
-        android:hint="Your interests"
+        android:hint="Interests"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
@@ -204,7 +171,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/input_interests"
         android:layout_marginStart="150dp"
-        android:hint="Male/Female"
+        android:hint="Male/Female/Any"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:textSize="15sp"
@@ -224,7 +191,7 @@
         android:textSize="18sp"
         android:textStyle="normal" />
 
-    <!-- Location Input -->
+    <!-- Hometown Input -->
     <EditText
         android:id="@+id/input_hometown"
         android:layout_width="wrap_content"
@@ -234,36 +201,7 @@
         android:hint="Region Country"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:focusable="false"
-        android:clickable="true"/>
-
-    <!-- Preference Label -->
-    <TextView
-        android:id="@+id/label_preference"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/input_preference"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="20dp"
-        android:text="Preference"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="normal" />
-
-    <!-- Preference Input -->
-    <EditText
-        android:id="@+id/input_preference"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/input_hometown"
-        android:layout_marginStart="150dp"
-        android:hint="Match Preference"
-        android:textColorHint="#FFFFFF"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:focusable="false"
-        android:clickable="true"/>
+        android:textSize="15sp" />
 
     <!-- Relationship Status Label -->
     <TextView
@@ -283,7 +221,7 @@
         android:id="@+id/input_relationshipStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/input_preference"
+        android:layout_below="@id/input_hometown"
         android:layout_marginStart="150dp"
         android:hint="Single/Married"
         android:textColorHint="#FFFFFF"
@@ -292,32 +230,6 @@
         android:focusable="false"
         android:clickable="true"/>
 
-    <!-- Visible Label -->
-    <TextView
-        android:id="@+id/label_visible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/input_visible"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="20dp"
-        android:text="Visiable"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="normal" />
-
-    <!-- Visible Input -->
-    <EditText
-        android:id="@+id/input_visible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/input_relationshipStatus"
-        android:layout_marginStart="150dp"
-        android:hint="Yes/No"
-        android:textColorHint="#FFFFFF"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:focusable="false"
-        android:clickable="true"/>
 
 
 </RelativeLayout>

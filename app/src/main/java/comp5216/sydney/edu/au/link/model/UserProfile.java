@@ -1,9 +1,12 @@
 package comp5216.sydney.edu.au.link.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserProfile {
+public class UserProfile implements Parcelable {
 
     private String userId;
     private String email;
@@ -13,20 +16,21 @@ public class UserProfile {
     private int age;
     private String profilePictureUrl;
     private String location;
-    private List<String> interests;
-    private List<String> preferences;
+    private String interests;
+    private String preferences;
     private boolean isVisible;
     private String relationshipStatus;
+    private String hometown;
 
     private static final String DEFAULT_PROFILE_PICTURE_URL =
             "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
     private static final int DEFAULT_AGE = 18;  // Default age
     private static final String DEFAULT_LOCATION = "Unknown";  // Default location
-    private static final List<String> DEFAULT_INTERESTS = new ArrayList<>();  // Default empty interests list
-    private static final List<String> DEFAULT_PREFERENCES = new ArrayList<>();  // Default empty preferences list
+    private static final String DEFAULT_INTERESTS = "";  // Default empty interests
+    private static final String DEFAULT_PREFERENCES = "";  // Default empty preferences
     private static final boolean DEFAULT_VISIBILITY = true;  // By default, user is visible
     private static final String DEFAULT_RELATIONSHIP_STATUS = "Single";  // Default relationship status
-
+    private static final String DEFAULT_HOMETOWN = "Earth";
     // Default constructor is needed for Firebase/Room and other ORM tools
     public UserProfile() {
         // Required empty constructor
@@ -46,95 +50,150 @@ public class UserProfile {
         this.preferences = DEFAULT_PREFERENCES;
         this.isVisible = DEFAULT_VISIBILITY;
         this.relationshipStatus = DEFAULT_RELATIONSHIP_STATUS;
+        this.hometown = DEFAULT_HOMETOWN;
     }
 
-    // Getters and Setters
+    // Parcelable constructor
+    protected UserProfile(Parcel in) {
+        userId = in.readString();
+        email = in.readString();
+        username = in.readString();
+        name = in.readString();
+        gender = in.readString();
+        age = in.readInt();
+        profilePictureUrl = in.readString();
+        location = in.readString();
+        interests = in.readString();
+        preferences = in.readString();
+        isVisible = in.readByte() != 0;  // Boolean read
+        relationshipStatus = in.readString();
+        hometown = in.readString();
+    }
 
-    public String getUserId() {
+    // Write object data to Parcel
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(userId);
+        dest.writeString(email);
+        dest.writeString(username);
+        dest.writeString(name);
+        dest.writeString(gender);
+        dest.writeInt(age);
+        dest.writeString(profilePictureUrl);
+        dest.writeString(location);
+        dest.writeString(interests);
+        dest.writeString(preferences);
+        dest.writeByte((byte) (isVisible ? 1 : 0));  // Boolean write
+        dest.writeString(relationshipStatus);
+        dest.writeString(hometown);
+    }
+
+    // Parcelable configuration
+    public static final Creator<UserProfile> CREATOR = new Creator<UserProfile>() {
+        @Override
+        public UserProfile createFromParcel(Parcel in) {
+            return new UserProfile(in);
+        }
+
+        @Override
+        public UserProfile[] newArray(int size) {
+            return new UserProfile[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+
+        // Getters and Setters
+
+    public String getUserId () {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId (String userId){
         this.userId = userId;
     }
 
-    public String getEmail() {
+    public String getEmail () {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail (String email){
         this.email = email;
     }
 
-    public String getUsername() {
+    public String getUsername () {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername (String username){
         this.username = username;
     }
 
-    public String getName() {
+    public String getName () {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName (String name){
         this.name = name;
     }
 
-    public String getGender() {
+    public String getGender () {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender (String gender){
         this.gender = gender;
     }
 
-    public int getAge() {
+    public int getAge () {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge ( int age){
         this.age = age;
     }
 
-    public String getProfilePictureUrl() {
+    public String getProfilePictureUrl () {
         return profilePictureUrl;
     }
 
-    public void setProfilePictureUrl(String profilePictureUrl) {
+    public void setProfilePictureUrl (String profilePictureUrl){
         this.profilePictureUrl = profilePictureUrl;
     }
 
-    public String getLocation() {
+    public String getLocation () {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation (String location){
         this.location = location;
     }
 
-    public List<String> getInterests() {
+    public String getInterests () {
         return interests;
     }
 
-    public void setInterests(List<String> interests) {
+    public void setInterests (String interests){
         this.interests = interests;
     }
 
-    public List<String> getPreferences() {
+    public String getPreferences () {
         return preferences;
     }
 
-    public void setPreferences(List<String> preferences) {
+    public void setPreferences (String preferences){
         this.preferences = preferences;
     }
 
-    public boolean isVisible() {
+    public boolean isVisible () {
         return isVisible;
     }
 
-    public void setVisible(boolean isVisible) {
+    public void setVisible ( boolean isVisible){
         this.isVisible = isVisible;
     }
 
@@ -142,9 +201,18 @@ public class UserProfile {
         return this.relationshipStatus;
     }
 
-    public void setRelationshipStatus(String relationshipStatus) {
+    public void setRelationshipStatus (String relationshipStatus){
         this.relationshipStatus = relationshipStatus;
     }
+
+    public String getHometown () {
+        return this.hometown;
+    }
+
+    public void setHometown (String hometown){
+        this.hometown = hometown;
+    }
+
 
 }
 

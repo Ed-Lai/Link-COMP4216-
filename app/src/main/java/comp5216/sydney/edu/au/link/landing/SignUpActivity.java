@@ -39,7 +39,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         // Initialize views
         backButton = findViewById(R.id.back_button);
-        loginButton = findViewById(R.id.register_button);
+        loginButton = findViewById(R.id.login_button);
         createAccountButton = findViewById(R.id.create_account_button);
 
         inputEmail = findViewById(R.id.input_email);

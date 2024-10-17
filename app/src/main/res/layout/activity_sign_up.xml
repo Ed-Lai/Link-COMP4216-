@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient">
@@ -18,10 +19,10 @@
 
     <!-- Login Button (Top Right) -->
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/register_button"
+        android:id="@+id/login_button"
         android:layout_width="100dp"
         android:layout_height="60dp"
-        android:layout_marginStart="290dp"
+        android:layout_marginStart="300dp"
         android:layout_marginTop="30dp"
         android:clickable="true"
         android:focusable="true"
@@ -31,6 +32,17 @@
         android:background="@drawable/register_button"
         android:backgroundTint="@null"
         android:textStyle="normal" />
+
+    <ImageView
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/back_button"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/bar"
+        android:scaleType="fitXY"
+        android:layout_centerHorizontal="true"
+        app:tint="@color/places_autocomplete_error_message" />
 
     <!-- Header: Add Account -->
     <TextView
@@ -64,9 +76,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="150dp"
         android:layout_marginTop="230dp"
-
         android:hint="myname@gmail.com"
-        android:textColorHint="#FFFFFF"
+        android:textColorHint="#686363"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
@@ -91,7 +102,7 @@
         android:layout_marginStart="150dp"
         android:layout_below="@id/input_email"
         android:hint="Your_User_name"
-        android:textColorHint="#FFFFFF"
+        android:textColorHint="#686363"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
@@ -116,7 +127,7 @@
         android:layout_marginStart="150dp"
         android:layout_below="@id/input_username"
         android:hint="******************"
-        android:textColorHint="#FFFFFF"
+        android:textColorHint="#686363"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
@@ -141,7 +152,7 @@
         android:layout_below="@id/input_password"
         android:layout_marginStart="150dp"
         android:hint="First Last"
-        android:textColorHint="#FFFFFF"
+        android:textColorHint="#686363"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
@@ -166,7 +177,7 @@
         android:layout_below="@id/input_name"
         android:layout_marginStart="150dp"
         android:hint="Male/Female"
-        android:textColorHint="#FFFFFF"
+        android:textColorHint="#686363"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 

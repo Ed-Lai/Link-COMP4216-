@@ -2,12 +2,15 @@ package comp5216.sydney.edu.au.link;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,7 +18,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,12 +46,14 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 
 import androidx.navigation.ui.AppBarConfiguration;
 import comp5216.sydney.edu.au.link.databinding.ActivityMainBinding;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
-
+import comp5216.sydney.edu.au.link.model.UserProfile;
 
 
 import java.util.Arrays;
@@ -58,15 +67,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private Location currentLocation;
     private FirebaseFirestore firestore;
+    private String fileName = "user_data.txt";
+    private FirebaseUser currentUser;
+    private UserProfile currentUserProfile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-      
+
         initFirestore();
         testDatabase();
-        
+        if (currentUserProfile == null) {
+            currentUserProfile = new UserProfile();
+        }
+
 
         // Initialize the Places API
         Places.initialize(getApplicationContext(), "AIzaSyAA87EkKQ1JX341Q3fMnyrDd1UiCs19FI8");
@@ -89,6 +104,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
+
+        setupNavigationButtons();
     }
     private void fetchLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -170,11 +187,37 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    private void setupNavigationButtons() {
+        // Home button click event
+        ImageView homeButton = findViewById(R.id.nav_home);
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
 
-    public void loadProfile(View view){
-        Intent intent = new Intent(MainActivity.this, AccountPage.class);
-        startActivity(intent);
+        // Notification button click event
+        ImageView notificationButton = findViewById(R.id.nav_notification);
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+//                startActivity(intent);
+            }
+        });
+
+        // Profile button click event
+        ImageView profileButton = findViewById(R.id.nav_profile);
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AccountPage.class);
+                intent.putExtra("userProfile", currentUserProfile);
+                startActivity(intent);
+            }
+        });
     }
+
 
 
     private String formatOpeningHours (OpeningHours openingHours){
@@ -225,7 +268,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStart();
 
         // Check if user is logged in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
             // User is not logged in, redirect to the LoginActivity
@@ -233,8 +276,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             startActivity(intent);
             finish();  // Close the MainActivity to prevent the user from returning to it
         } else {
-            // User is logged in, continue with showing the main content
-            Toast.makeText(this, "Welcome back, " + currentUser.getEmail(), Toast.LENGTH_SHORT).show();
+            loadUserDataFromFirestore();
         }
     }
 
@@ -249,5 +291,76 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
         CollectionReference testCollection = firestore.collection("testCollection");
         testCollection.add(testData);
+    }
+
+    private void loadUserDataFromFirestore() {
+        // Show a loading dialog
+        ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("Loading user data...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();  // Show the progress dialog
+
+        // Reference to the specific user document in the "userProfiles" collection
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("userProfiles").document(userId);
+
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                // Dismiss the progress dialog when the task completes
+                progressDialog.dismiss();
+
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // Get data from the Firestore document
+                        String name = document.getString("name");
+                        String username = document.getString("username");
+                        String gender = document.getString("gender");
+                        Long age = document.getLong("age");
+                        String ageString = age != null ? age.toString() : "";
+                        String location = document.getString("location");
+                        String relationshipStatus = document.getString("relationshipStatus");
+                        boolean visible = document.getBoolean("visible");
+                        String visibleString = visible ? "Yes" : "No";  // Convert boolean to Yes/No string
+                        String preference = document.getString("preference");
+                        String photoUrl = document.getString("profilePictureUrl");
+
+                        // Save the data to local file for later use
+                        putDataInUserProfile(name, username, gender, ageString, location, relationshipStatus, visibleString, preference, photoUrl);
+                    } else {
+                        Log.d("Firestore", "No such document");
+                    }
+                } else {
+                    Log.d("Firestore", "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    private void putDataInUserProfile(String name, String username, String gender, String age,
+                                      String location, String relationshipStatus, String visible,
+                                      String preference, String photoUrl) {
+        currentUserProfile.setUserId(currentUser.getUid());
+        currentUserProfile.setName(name);  // Set user's name
+        currentUserProfile.setUsername(username);  // Set user's username
+        currentUserProfile.setGender(gender);  // Set user's gender
+
+        // Parse and set the age if it's a valid number
+        try {
+            currentUserProfile.setAge(Integer.parseInt(age));  // Convert age to integer and set it
+        } catch (NumberFormatException e) {
+            e.printStackTrace();  // Handle invalid number input for age
+        }
+
+        currentUserProfile.setLocation(location);  // Set user's location
+        currentUserProfile.setRelationshipStatus(relationshipStatus);  // Set relationship status
+
+        // Convert visible string ("Yes"/"No") to boolean and set it
+        currentUserProfile.setVisible(visible.equals("Yes"));  // Set visibility status
+
+        currentUserProfile.setPreferences(preference);  // Set user's preferences
+        currentUserProfile.setProfilePictureUrl(photoUrl);
+
     }
 }

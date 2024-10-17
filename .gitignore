@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Ignore Firebase configuration file
+/app/google-services.json
+
