@@ -53,7 +53,6 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
         });
 
         currentUserId = getCurrentUserId();
-        //currentUserId = "1";
 
 
 
@@ -65,28 +64,28 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
     private void loadAllMatchesForCurrentUser( ) {
         CollectionReference matchPersonRef = db.collection("matchRequests");
 
-        // 查询 requestedId 为 currentUserId 且状态为 finish 的文档
+        // check requestedId equal currentUserId and status is  finish
         Task<QuerySnapshot> requestedIdQuery = matchPersonRef.whereEqualTo("requestedId", currentUserId)
                 .whereEqualTo("status", "finish")
                 .get();
 
-        // 查询 requesterId 为 currentUserId 且状态为 finish 的文档
+        // check requesterId equal currentUserId and status is  finish
         Task<QuerySnapshot> requesterIdQuery = matchPersonRef.whereEqualTo("requesterId", currentUserId)
                 .whereEqualTo("status", "finish")
                 .get();
         Set<String> loadedUserIds = new HashSet<>();
 
-        // 使用 Tasks.whenAllSuccess 来等待所有查询完成
+        //use Tasks.whenAllSuccess to wait all check finished
         Tasks.whenAllSuccess(requestedIdQuery, requesterIdQuery).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.d("Firestore", "Data fetched successfully");
 
-                matchPersonList.clear();  // 清除之前的数据
+                matchPersonList.clear();
 
-                // 获取查询结果
+                // result
                 List<Object> queryResults = task.getResult();
                 for (Object result : queryResults) {
-                    QuerySnapshot querySnapshot = (QuerySnapshot) result;  // 将 Object 转换为 QuerySnapshot
+                    QuerySnapshot querySnapshot = (QuerySnapshot) result;
 
                     if (!querySnapshot.isEmpty()) {
                         for (QueryDocumentSnapshot document : querySnapshot) {
@@ -94,18 +93,18 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
 
                             String requesterId = matchRequest.getRequesterId();
                             String requestedId = matchRequest.getRequestedId();
-                            // 检查并加载 requesterId
+                            // check and load requesterId
                             if (requesterId != null && !requesterId.equals(currentUserId) && !loadedUserIds.contains(requesterId)) {
                                 loadMatchPersonDetails(requesterId);
                                 Log.d("Firestore", "Loaded requesterId: " + requesterId);
-                                loadedUserIds.add(requesterId);  // 标记为已加载
+                                loadedUserIds.add(requesterId);
                             }
 
-                            // 检查并加载 requestedId
+                            // check and load requestedId
                             if (requestedId != null && !requestedId.equals(currentUserId) && !loadedUserIds.contains(requestedId)) {
                                 loadMatchPersonDetails(requestedId);
                                 Log.d("Firestore", "Loaded requestedId: " + requestedId);
-                                loadedUserIds.add(requestedId);  // 标记为已加载
+                                loadedUserIds.add(requestedId);
                             }
                         }
                     } else {
@@ -113,7 +112,6 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
                     }
                 }
 
-                // 确保所有数据加载完成后再刷新适配器
                 adapter.notifyDataSetChanged();
             } else {
                 Log.e("Firestore", "Error fetching data", task.getException());
@@ -121,17 +119,17 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
         });
     }
     private void loadMatchPersonDetails(String requesterID) {
-        Log.d("Firestore", "Loading user profile for requesterID: " + requesterID); // 添加日志
+        Log.d("Firestore", "Loading user profile for requesterID: " + requesterID);
         db.collection("userProfiles")
-                .whereEqualTo("userId", requesterID) // 假设 "userId" 是字段名
+                .whereEqualTo("userId", requesterID)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    Log.d("Firestore", "UserProfile query snapshot size: " + querySnapshot.size()); // 检查返回的文档数量
+                    Log.d("Firestore", "UserProfile query snapshot size: " + querySnapshot.size());
                     if (!querySnapshot.isEmpty()) {
                         for (QueryDocumentSnapshot document : querySnapshot) {
                             UserProfile person = document.toObject(UserProfile.class);
-                            Log.d("Firestore", "UserProfile fetched: " + person); // 打印获取到的用户数据
-                            matchPersonList.add(person); // 添加到显示列表
+                            Log.d("Firestore", "UserProfile fetched: " + person);
+                            matchPersonList.add(person);
                             adapter.notifyDataSetChanged();
                         }
                     } else {
@@ -143,15 +141,72 @@ public class MatchSuccessActivity extends AppCompatActivity implements MatchSucc
 
     @Override
     public void onDeleteRequest(UserProfile person) {
-        String documentName = person.getUserId()+"to"+currentUserId;
+        String documentName1 = person.getUserId() + "to" + currentUserId;
+        String documentName2 = currentUserId + "to" + person.getUserId();
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String currentUserId = currentUser.getUid();
+
+            // 首先获取当前用户的 userProfile
+            db.collection("userProfiles").document(currentUserId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
+                            if (currentUserProfile != null && person != null) {
+                                // 从 personInMatch 列表中移除此用户
+                                currentUserProfile.deletePersonInMatch(person.getUserId());
+
+                                // 更新 userProfiles 的 personInMatch 列表
+                                db.collection("userProfiles").document(currentUserId)
+                                        .set(currentUserProfile)
+                                        .addOnSuccessListener(aVoid1 -> {
+                                            Log.d("Firestore", "UserProfile updated successfully, person removed from personInMatch.");
+
+                                            // 检查 documentName1 是否存在
+                                            db.collection("matchRequests").document(documentName1)
+                                                    .get()
+                                                    .addOnSuccessListener(documentSnapshot1 -> {
+                                                        if (documentSnapshot1.exists()) {
+                                                            // 如果 documentName1 存在，更新 status 为 cancel
+                                                            updateMatchRequestStatus(documentName1, person);
+                                                        } else {
+                                                            // 如果 documentName1 不存在，检查 documentName2
+                                                            db.collection("matchRequests").document(documentName2)
+                                                                    .get()
+                                                                    .addOnSuccessListener(documentSnapshot2 -> {
+                                                                        if (documentSnapshot2.exists()) {
+                                                                            // 如果 documentName2 存在，更新 status 为 cancel
+                                                                            updateMatchRequestStatus(documentName2, person);
+                                                                        } else {
+                                                                            Log.e("Firestore", "Match request document not found.");
+                                                                        }
+                                                                    })
+                                                                    .addOnFailureListener(e -> Log.e("Firestore", "Error fetching match request document2", e));
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(e -> Log.e("Firestore", "Error fetching match request document1", e));
+                                        })
+                                        .addOnFailureListener(e -> Log.e("Firestore", "Error updating UserProfile", e));
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.e("Firestore", "Error fetching current user profile", e));
+        }
+    }
+
+    private void updateMatchRequestStatus(String documentName, UserProfile person) {
+        // 更新 matchRequests 文档的 status 为 cancel
         db.collection("matchRequests").document(documentName)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
+                .update("status", "cancel")
+                .addOnSuccessListener(aVoid2 -> {
+                    // 从本地列表中移除 person 并更新 UI
                     matchPersonList.remove(person);
                     adapter.notifyDataSetChanged();
-                    Toast.makeText(this, "Match request deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Match request status updated to 'cancel'", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(e -> Log.e("Firestore", "Error deleting match request", e));
+                .addOnFailureListener(e -> Log.e("Firestore", "Error updating match request status", e));
     }
     public String getCurrentUserId() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

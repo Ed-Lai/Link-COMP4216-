@@ -47,8 +47,8 @@ public class MatchPageActivity extends AppCompatActivity {
     private TextView genderText;
     private RecyclerView interestView;
 
-    private List<UserProfile> matchedPersons; // 用户数据列表
-    private int currentIndex = 0; // 当前显示用户的索引
+    private List<UserProfile> matchedPersons;
+    private int currentIndex = 0;
 
     private ImageButton rightPersonButton;
     private ImageButton leftPersonButton;
@@ -58,10 +58,9 @@ public class MatchPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.match_main);
 
-        // 初始化 Firebase Firestore 和当前用户ID
+        // Initialize Firebase Firestore with the current user ID
         db = FirebaseFirestore.getInstance();
         currentUserId = getCurrentUserId();
-        //currentUserId = "1";
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
@@ -77,12 +76,12 @@ public class MatchPageActivity extends AppCompatActivity {
 
         imageButton = findViewById(R.id.match_gobackimageButton);
         imageButton.setOnClickListener(v -> {
-            // 创建跳转到 MatchMainActivity 的 Intent
+            // Create an Intent to jump to MatchMainActivity
             Intent intent = new Intent(MatchPageActivity.this, MatchSuccessActivity.class);
             startActivity(intent);
         });
 
-        // 初始化 UI 组件
+        // Initializing UI components
         matchName = findViewById(R.id.match_name);
         matchStart = findViewById(R.id.match_start);
         matchUserPhoto = findViewById(R.id.match_userphoto);
@@ -92,12 +91,13 @@ public class MatchPageActivity extends AppCompatActivity {
         genderText = findViewById(R.id.personGenderContent);
         interestView = findViewById(R.id.interestRecyclerView);
         processMatchRequests();
-        // 设置匹配用户信息
+
+        // Set matching user information
         loadMatchedUsers();
 
+        // Set the matching button click event
         rightPersonButton.setOnClickListener(v -> showNextPerson());
         leftPersonButton.setOnClickListener(v -> showPreviousPerson());
-        // 设置匹配按钮点击事件
         matchButton.setOnClickListener(v -> sendMatchRequest());
 
 
@@ -121,18 +121,18 @@ public class MatchPageActivity extends AppCompatActivity {
                         MatchRequests matchRequest = document.toObject(MatchRequests.class);
                         String requestedId = matchRequest.getRequestedId();
 
-                        // 获取当前用户的 UserProfile
+                        // Get the UserProfile of the current user
                         db.collection("userProfiles").document(currentUserId)
                                 .get()
                                 .addOnSuccessListener(documentSnapshot -> {
                                     if (documentSnapshot.exists()) {
                                         UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
                                         if (currentUserProfile != null) {
-                                            // 添加 requestedId 到当前用户的 personInMatch 集合中
+                                            // Add requestedId to the personInMatch collection of the current user
                                             if (!currentUserProfile.getPersonInMatch().contains(requestedId)) {
                                                 currentUserProfile.addPersonInMatch(requestedId);
                                                 Toast.makeText(this, "update personInMatch successfully" + requestedId, Toast.LENGTH_SHORT).show();
-                                                // 更新当前用户的 personInMatch 到数据库
+                                                // Update the current user's personInMatch to the database
                                                 db.collection("userProfiles").document(currentUserId)
                                                         .set(currentUserProfile)
                                                         .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully updated personInMatch for current user."))
@@ -145,6 +145,71 @@ public class MatchPageActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error fetching match requests", e));
+
+        db.collection("matchRequests")
+                .whereEqualTo("requesterId",currentUserId)
+                .whereEqualTo("status","cancel")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        MatchRequests matchRequest = document.toObject(MatchRequests.class);
+                        String requestedId = matchRequest.getRequestedId();
+
+                        // Get the UserProfile of the current user
+                        db.collection("userProfiles").document(currentUserId)
+                                .get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
+                                        if (currentUserProfile != null) {
+                                            // Add requestedId to the personInMatch collection of the current user
+                                            if (currentUserProfile.getPersonInMatch().contains(requestedId)) {
+                                                currentUserProfile.deletePersonInMatch(requestedId);
+                                                Toast.makeText(this, "update personInMatch successfully" + requestedId, Toast.LENGTH_SHORT).show();
+                                                // Update the current user's personInMatch to the database
+                                                db.collection("userProfiles").document(currentUserId)
+                                                        .set(currentUserProfile)
+                                                        .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully updated personInMatch for current user."))
+                                                        .addOnFailureListener(e -> Log.e("Firestore", "Error updating personInMatch for current user", e));
+                                            }
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching current user profile", e));
+                    }
+                });
+        db.collection("matchRequests")
+                .whereEqualTo("requestedId",currentUserId)
+                .whereEqualTo("status","cancel")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        MatchRequests matchRequest = document.toObject(MatchRequests.class);
+                        String requestedId = matchRequest.getRequestedId();
+
+                        // Get the UserProfile of the current user
+                        db.collection("userProfiles").document(currentUserId)
+                                .get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
+                                        if (currentUserProfile != null) {
+                                            // Add requestedId to the personInMatch collection of the current user
+                                            if (currentUserProfile.getPersonInMatch().contains(requestedId)) {
+                                                currentUserProfile.deletePersonInMatch(requestedId);
+                                                Toast.makeText(this, "update personInMatch successfully" + requestedId, Toast.LENGTH_SHORT).show();
+                                                // Update the current user's personInMatch to the database
+                                                db.collection("userProfiles").document(currentUserId)
+                                                        .set(currentUserProfile)
+                                                        .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully updated personInMatch for current user."))
+                                                        .addOnFailureListener(e -> Log.e("Firestore", "Error updating personInMatch for current user", e));
+                                            }
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching current user profile", e));
+                    }
+                });
     }
 
 
@@ -154,7 +219,7 @@ public class MatchPageActivity extends AppCompatActivity {
             return;
         }
 
-        // 获取当前用户的 UserProfile 以便获取匹配中的用户集合
+        // Get the UserProfile of the current user to get the set of matching users
         db.collection("userProfiles").document(currentUserId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -165,7 +230,7 @@ public class MatchPageActivity extends AppCompatActivity {
                             ArrayList<String> currentUserInterests = currentUserProfile.getInterests();
 
 
-                            // 获取其他用户的信息
+                            // Get other users' information
                             db.collection("userProfiles")
                                     .whereNotEqualTo("userId", currentUserId) // 确保 userId 是数据库中的字段名
                                     .get()
@@ -174,23 +239,22 @@ public class MatchPageActivity extends AppCompatActivity {
                                         for (QueryDocumentSnapshot document : querySnapshot) {
                                             UserProfile person = document.toObject(UserProfile.class);
 
-                                            // 检查该 person 是否已经存在于当前用户的匹配集合中
+                                            // Check if the person already exists in the matching set of the current user
                                             if (personInMatchSet == null || !personInMatchSet.contains(person.getUserId())) {
 
                                                 ArrayList<String> otherUserInterests = person.getInterests();
                                                 int commonInterestCount = calculateCommonInterests(currentUserInterests, otherUserInterests);
 
-                                                // 只有在两人有一个以上的共同兴趣时，才将该用户添加到匹配列表
+                                                // 只Only when two people have more than one common interest, the user is added to the match list
                                                 if (commonInterestCount >= 0) {
                                                     if(Objects.equals(currentUserProfile.getLocation(), person.getLocation()) && !person.getLocation().equals("Unknown")){
                                                         matchedPersons.add(person);
                                                     }
 
                                                 }
-                                                //matchedPersons.add(person);
                                             }
                                         }
-                                        // 显示第一个用户
+                                        // Show first user
                                         if (!matchedPersons.isEmpty()) {
                                             showPersonAtIndex(currentIndex);
                                         }
@@ -219,9 +283,9 @@ public class MatchPageActivity extends AppCompatActivity {
             return;
         }
 
-        String matchedUserId = matchedPersons.get(currentIndex).getUserId();  // 获取当前显示用户的 ID
+        String matchedUserId = matchedPersons.get(currentIndex).getUserId();
 
-        // 查询 matchRequests 集合以检测是否存在匹配请求
+        // Query the matchRequests collection to detect whether there is a matching request
         String documentName = currentUserId + "to" + matchedUserId;
         db.collection("matchRequests")
                 .document(documentName)
@@ -230,14 +294,14 @@ public class MatchPageActivity extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         String status = documentSnapshot.getString("status");
                         if ("pending".equalsIgnoreCase(status)) {
-                            // 如果匹配请求是 "pending"，则设置按钮状态为 "Matching"
+                            // If the matching request is "pending", set the button state to "Matching"
                             matchButton.setText("Matching");
                         }else {
-                            // 其他状态
+                            // Other Status
                             matchButton.setText("Match");
                         }
                     } else {
-                        // 如果没有匹配请求文档，表示用户未在匹配状态中
+                        // If there is no matching request document, it means the user is not in the matching state
                         matchButton.setText("Match");
                     }
                 })
@@ -247,7 +311,7 @@ public class MatchPageActivity extends AppCompatActivity {
                 });
     }
 
-    // 显示下一个用户
+    // Show next user
     private void showNextPerson() {
         if (currentIndex < matchedPersons.size() - 1) {
             currentIndex++;
@@ -258,7 +322,7 @@ public class MatchPageActivity extends AppCompatActivity {
         }
     }
 
-    // 显示上一个用户
+    // Show previous user
     private void showPreviousPerson() {
         if (currentIndex > 0) {
             currentIndex--;
@@ -269,13 +333,13 @@ public class MatchPageActivity extends AppCompatActivity {
         }
     }
 
-    // 根据索引显示用户信息
+    // Display user information by index
     private void showPersonAtIndex(int index) {
         UserProfile person = matchedPersons.get(index);
         matchedUserId = person.getUserId();
         matchName.setText(person.getName());
         genderText.setText(person.getGender());
-        // 使用 Glide 加载用户图片
+        // Loading user images using Glide
         if (person.getProfilePictureUrl() != null && !person.getProfilePictureUrl().isEmpty()) {
             Glide.with(this).load(person.getProfilePictureUrl()).into(matchUserPhoto);
         } else {
@@ -285,7 +349,7 @@ public class MatchPageActivity extends AppCompatActivity {
         ArrayList<String> interestsList = person.getInterests();
         RecyclerView recyclerView = findViewById(R.id.interestRecyclerView);
 
-        // 创建并设置适配器
+        // Create and set up the adapter
         InterestsAdapter adapter = new InterestsAdapter(interestsList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -307,15 +371,11 @@ public class MatchPageActivity extends AppCompatActivity {
             return;
         }
 
-        // 设置按钮状态为“Matching”
-        //matchButton.setText("Matching");
-
-        // 创建并保存匹配请求到 Firebase
         MatchRequests matchRequest = new MatchRequests(currentUserId, matchedUserId, "pending");
         String documentName = currentUserId +"to"+matchedUserId;
         System.out.println(documentName);
             db.collection("matchRequests")
-                .document(documentName)  // 使用自定义文档名称
+                .document(documentName)
                 .set(matchRequest)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "Match request saved successfully with document name: " + documentName);
@@ -331,16 +391,16 @@ public class MatchPageActivity extends AppCompatActivity {
 
     private int calculateCommonInterests(ArrayList<String> interests1, ArrayList<String> interests2) {
 
-        // 如果有任何一个为 null 或为空，返回匹配度为 0
+        // If any of them is null or empty, the return value is 0.
         if (interests1 == null || interests1.isEmpty() || interests2 == null || interests2.isEmpty()) {
             return 0;
         }
 
-        // 将兴趣字符串按空格分隔并转换为集合
+        // Separate the interest string by space and convert it into a set
         Set<String> set1 = new HashSet<>(interests1);
         Set<String> set2 = new HashSet<>(interests2);
 
-        // 计算交集
+        // Calculate intersection
         set1.retainAll(set2);
         return set1.size();
     }
