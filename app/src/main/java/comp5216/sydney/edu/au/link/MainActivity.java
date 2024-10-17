@@ -56,6 +56,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
 
+import comp5216.sydney.edu.au.link.Match.MatchPageActivity;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
 
 import java.util.Arrays;
@@ -163,10 +164,10 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
                 // TODO: add match page once completed
-//                else if (itemId == R.id.navigation_matches) {
-//                    startActivity(new Intent(MainActivity.this, EditProfilePage.class));
-//                    return true;
-//                }
+                else if (itemId == R.id.navigation_matches) {
+                    startActivity(new Intent(MainActivity.this, MatchPageActivity.class));
+                    return true;
+                }
                 return false;
             }
         });

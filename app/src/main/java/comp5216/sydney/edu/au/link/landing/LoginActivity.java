@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import comp5216.sydney.edu.au.link.MainActivity;
+import comp5216.sydney.edu.au.link.Match.MatchActivity;
 import comp5216.sydney.edu.au.link.R;
 
 
@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (user != null) {
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             // Navigate to main activity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            Intent intent = new Intent(LoginActivity.this, MatchActivity.class);
                             startActivity(intent);
                             finish();  // Optional: close the login activity
                         }
@@ -116,7 +116,5 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
 
 }
