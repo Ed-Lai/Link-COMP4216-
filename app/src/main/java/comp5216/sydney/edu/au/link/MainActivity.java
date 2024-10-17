@@ -2,27 +2,18 @@ package comp5216.sydney.edu.au.link;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,7 +40,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import java.util.HashMap;
 
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
-import comp5216.sydney.edu.au.link.model.UserProfile;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,19 +54,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private Location currentLocation;
     private FirebaseFirestore firestore;
     private FirebaseUser currentUser;
-    private UserProfile currentUserProfile;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         initFirestore();
-        //testDatabase();
-        if (currentUserProfile == null) {
-            currentUserProfile = new UserProfile();
-        }
-
 
         // Initialize the Places API
         Places.initialize(getApplicationContext(), "AIzaSyAA87EkKQ1JX341Q3fMnyrDd1UiCs19FI8");
@@ -206,7 +190,6 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AccountPage.class);
-                intent.putExtra("userProfile", currentUserProfile);
                 startActivity(intent);
             }
         });
@@ -275,14 +258,5 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         firestore = FirebaseFirestore.getInstance();
 
     }
-
-    private void testDatabase(){
-        HashMap<String, Object> testData = new HashMap<>();
-        testData.put("testKey", "testValue");
-
-        CollectionReference testCollection = firestore.collection("testCollection");
-        testCollection.add(testData);
-    }
-
 
 }

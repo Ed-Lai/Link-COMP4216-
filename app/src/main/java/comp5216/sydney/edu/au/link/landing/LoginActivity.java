@@ -22,9 +22,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.concurrent.CountDownLatch;
-
-import comp5216.sydney.edu.au.link.AccountPage;
 import comp5216.sydney.edu.au.link.MainActivity;
 import comp5216.sydney.edu.au.link.R;
 
