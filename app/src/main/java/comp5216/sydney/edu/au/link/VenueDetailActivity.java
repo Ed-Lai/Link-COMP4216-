@@ -9,16 +9,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import comp5216.sydney.edu.au.link.landing.LoginActivity;
 
 public class VenueDetailActivity extends AppCompatActivity {
 
@@ -27,6 +34,9 @@ public class VenueDetailActivity extends AppCompatActivity {
     private HashMap<String, List<String>> checkinData = new HashMap<>();
     private String currentCheckedInPlace = null;
     private Button checkinButton;
+    private FirebaseAuth mAuth;
+    private FirebaseUser User;
+    private String userId;
 
     // Save checked-in place in SharedPreferences
     private void saveCheckedInPlace(String placeName) {
@@ -61,6 +71,15 @@ public class VenueDetailActivity extends AppCompatActivity {
         addressTextView.setText("Address: " + address);
         openingHoursTextView.setText("Opening Hours:\n" + openingHours);
         checkinButton = findViewById(R.id.CheckinButton);
+        Log.d("VenueDetailActivity", "IN GETTING USER");
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null) {
+            Toast.makeText(VenueDetailActivity.this, "No user is signed in", Toast.LENGTH_SHORT).show();
+        } else {
+            userId = currentUser.getUid();
+            Log.d("VenueDetailActivity", "Current user ID: " + userId);
+        }
 
         // Display the photo if available
         ImageView venuePhotoImageView = findViewById(R.id.venuePhotoImageView);
@@ -102,7 +121,7 @@ public class VenueDetailActivity extends AppCompatActivity {
                 .setTitle("Check In Confirmation")
                 .setMessage("Are you sure you want to check in at: " + placeName + "?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    addCheckinUser(placeName, currentUser);
+                    checkIn(placeName);
                     currentCheckedInPlace = placeName;
                     saveCheckedInPlace(placeName);
                     updateButtonState(placeName);
@@ -121,7 +140,7 @@ public class VenueDetailActivity extends AppCompatActivity {
                     currentCheckedInPlace = null;
                     saveCheckedInPlace(null);  // Clear the saved checked-in place
                     updateButtonState(placeName);
-                    checkOutUser(placeName, currentUser);
+                    checkOut();
                     Toast.makeText(VenueDetailActivity.this, "Checked out from: " + placeName, Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
@@ -149,36 +168,40 @@ public class VenueDetailActivity extends AppCompatActivity {
     }
 
     // Add user to the check-in list
-    private void addCheckinUser(String placeName, String userName) {
-        if (!checkinData.containsKey(placeName)) {
-            checkinData.put(placeName, new ArrayList<>());
-        }
+    private void checkIn(String placeName) {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        List<String> usersCheckedIn = checkinData.get(placeName);
-        if (!usersCheckedIn.contains(userName)) {
-            usersCheckedIn.add(userName);
-            Log.d("VenueDetailActivity", userName + " checked in at " + placeName);
-        } else {
-            Toast.makeText(this, "You are already checked into " + placeName, Toast.LENGTH_SHORT).show();
-        }
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Log.d("VenueDetailActivity", "Check-in data: " + checkinData);
+            // Update the location in Firestore
+            db.collection("userProfiles").document(userId)
+                    .update("location", placeName)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("Firestore", "Checked in at: " + placeName);
+                        Toast.makeText(VenueDetailActivity.this, "Checked in at: " + placeName, Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error updating location", e));
+        }
     }
 
     // Remove user from the check-in list
-    private void checkOutUser(String placeName, String userName) {
-        if (!checkinData.containsKey(placeName)) {
-            return;
+    private void checkOut() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            // Update the location in Firestore to "Unknown"
+            db.collection("userProfiles").document(userId)
+                    .update("location", "Unknown")
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("Firestore", "Checked out, location set to Unknown");
+                        Toast.makeText(VenueDetailActivity.this, "Checked out", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> Log.w("Firestore", "Error updating location", e));
         }
-
-        List<String> usersCheckedIn = checkinData.get(placeName);
-        usersCheckedIn.remove(userName);
-
-        if (usersCheckedIn.isEmpty()) {
-            checkinData.remove(placeName);
-            Log.d("VenueDetailActivity", "No users left, removed " + placeName + " from check-in data.");
-        }
-
-        Log.d("VenueDetailActivity", "Check-in data after checkout: " + checkinData);
     }
 }

@@ -65,5 +65,11 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 
 
+    // Import for navigation bar
+    implementation 'com.google.android.material:material:1.9.0'
+
 }
+
+apply plugin: 'com.google.gms.google-services'
+
 

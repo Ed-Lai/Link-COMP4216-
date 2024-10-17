@@ -1,8 +1,11 @@
 package comp5216.sydney.edu.au.link;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +18,12 @@ import java.util.List;
 public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.VenueViewHolder> {
 
     private List<Place> placeList;
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(Place place);
+    }
+
 
     public VenueAdapter(List<Place> placeList) {
         this.placeList = placeList;
@@ -23,7 +32,7 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.VenueViewHol
     @NonNull
     @Override
     public VenueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.venue_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.venue_recycler_item, parent, false);
         return new VenueViewHolder(view);
     }
 
@@ -32,6 +41,13 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.VenueViewHol
         Place place = placeList.get(position);
         holder.venueName.setText(place.getName());
         holder.venueAddress.setText(place.getAddress());
+        Log.d("test", holder.venueAddress.getText().toString());
+        holder.venueIcon.setImageResource(R.drawable.location_icon);
+
+        holder.itemView.setOnClickListener(v -> {
+            // Trigger the click listener and pass the clicked place
+            listener.onItemClick(place);
+        });
     }
 
     @Override
@@ -43,11 +59,18 @@ public class VenueAdapter extends RecyclerView.Adapter<VenueAdapter.VenueViewHol
 
         TextView venueName;
         TextView venueAddress;
+        ImageView venueIcon;
 
         public VenueViewHolder(@NonNull View itemView) {
             super(itemView);
             venueName = itemView.findViewById(R.id.venueName);
             venueAddress = itemView.findViewById(R.id.venueAddress);
+            venueIcon = itemView.findViewById(R.id.venueIcon);
         }
+    }
+
+    public void filterList(List<Place> filteredVenues) {
+        this.placeList = filteredVenues;
+        notifyDataSetChanged();
     }
 }
