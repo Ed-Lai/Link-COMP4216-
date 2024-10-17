@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import comp5216.sydney.edu.au.link.R;
@@ -67,8 +68,6 @@ public class MatchPageActivity extends AppCompatActivity {
             String userId = currentUser.getUid();
             Toast.makeText(this, "UserID Logged in user ID: " + userId, Toast.LENGTH_SHORT).show();
         } else {
-            // 用户未登录，跳转到登录页面
-            Toast.makeText(this, "login unsuccessful", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -92,6 +91,7 @@ public class MatchPageActivity extends AppCompatActivity {
         leftPersonButton = findViewById(R.id.leftperson);
         genderText = findViewById(R.id.personGenderContent);
         interestView = findViewById(R.id.interestRecyclerView);
+        processMatchRequests();
         // 设置匹配用户信息
         loadMatchedUsers();
 
@@ -101,10 +101,50 @@ public class MatchPageActivity extends AppCompatActivity {
         matchButton.setOnClickListener(v -> sendMatchRequest());
 
 
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        processMatchRequests();
+        loadMatchedUsers();
+    }
 
 
+    private void processMatchRequests() {
+        db.collection("matchRequests")
+                .whereEqualTo("requesterId", currentUserId)
+                .whereEqualTo("status", "finish")
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        MatchRequests matchRequest = document.toObject(MatchRequests.class);
+                        String requestedId = matchRequest.getRequestedId();
 
-
+                        // 获取当前用户的 UserProfile
+                        db.collection("userProfiles").document(currentUserId)
+                                .get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        UserProfile currentUserProfile = documentSnapshot.toObject(UserProfile.class);
+                                        if (currentUserProfile != null) {
+                                            // 添加 requestedId 到当前用户的 personInMatch 集合中
+                                            if (!currentUserProfile.getPersonInMatch().contains(requestedId)) {
+                                                currentUserProfile.addPersonInMatch(requestedId);
+                                                Toast.makeText(this, "update personInMatch successfully" + requestedId, Toast.LENGTH_SHORT).show();
+                                                // 更新当前用户的 personInMatch 到数据库
+                                                db.collection("userProfiles").document(currentUserId)
+                                                        .set(currentUserProfile)
+                                                        .addOnSuccessListener(aVoid -> Log.d("Firestore", "Successfully updated personInMatch for current user."))
+                                                        .addOnFailureListener(e -> Log.e("Firestore", "Error updating personInMatch for current user", e));
+                                            }
+                                        }
+                                    }
+                                })
+                                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching current user profile", e));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("Firestore", "Error fetching match requests", e));
     }
 
 
@@ -141,8 +181,11 @@ public class MatchPageActivity extends AppCompatActivity {
                                                 int commonInterestCount = calculateCommonInterests(currentUserInterests, otherUserInterests);
 
                                                 // 只有在两人有一个以上的共同兴趣时，才将该用户添加到匹配列表
-                                                if (commonInterestCount > 0) {
-                                                    matchedPersons.add(person);
+                                                if (commonInterestCount >= 0) {
+                                                    if(Objects.equals(currentUserProfile.getLocation(), person.getLocation()) && !person.getLocation().equals("Unknown")){
+                                                        matchedPersons.add(person);
+                                                    }
+
                                                 }
                                                 //matchedPersons.add(person);
                                             }
