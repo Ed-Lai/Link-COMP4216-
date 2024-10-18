@@ -7,14 +7,12 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
@@ -112,7 +110,8 @@ public class VenueDetailActivity extends AppCompatActivity {
                 promptCheckOut(placeName);
             } else {
                 // Display a message to check out from the current place first
-                Toast.makeText(VenueDetailActivity.this, "Already checked in at " + currentCheckedInPlace + ". Please check out first.", Toast.LENGTH_LONG).show();
+                Toast.makeText(VenueDetailActivity.this, "Already checked in at " +
+                        currentCheckedInPlace + ". Please check out first.", Toast.LENGTH_LONG).show();
             }
         });
     }

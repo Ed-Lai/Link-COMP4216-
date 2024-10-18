@@ -10,8 +10,22 @@
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/navbar_menu"
+        app:backgroundTint="@color/navBar_colour"
+        app:itemIconTint="@drawable/nav_item_selector"
+        app:itemTextColor="@drawable/nav_item_selector"
+        app:itemIconSize="36dp"
+        app:itemPaddingTop="15dp"
+        app:itemActiveIndicatorStyle="@color/navBar_colour"
         />
+
 
     <SearchView
         android:id="@+id/searchBar"
@@ -35,18 +49,5 @@
         android:visibility="gone"
         />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/navBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:menu="@menu/navbar_menu"
-        app:backgroundTint="@color/navBar_colour"
-        app:itemIconTint="@drawable/nav_item_selector"
-        app:itemTextColor="@drawable/nav_item_selector"
-        app:itemIconSize="36dp"
-        app:itemPaddingTop="15dp"
-        app:itemActiveIndicatorStyle="@color/navBar_colour"
-        />
 </RelativeLayout>
 

@@ -1,86 +1,82 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_gradient">
 
-    <!-- CircleImageView for profile photo -->
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_picture"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginStart="155dp"
-        android:layout_marginTop="180dp"
-        android:layout_marginEnd="156dp"
-        android:clickable="true"
-        android:contentDescription="@string/profile_picture_desc"
-        android:src="@drawable/default_profile_picture"
-        app:civ_border_color="@color/black"
-        app:civ_border_width="2dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/editProfileButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="147dp"
-        android:layout_marginTop="49dp"
-        android:layout_marginEnd="147dp"
-        android:backgroundTint="#C3C2C2"
-        android:onClick="editProfile"
-        android:text="Edit profile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_picture" />
-
-    <TextView
-        android:id="@+id/userFullNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="169dp"
-        android:layout_marginEnd="168dp"
-        android:layout_marginBottom="283dp"
-        android:text="Emily Smith"
-        android:textSize="25dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.517"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/usernameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="154dp"
-        android:layout_marginTop="48dp"
-        android:layout_marginEnd="155dp"
-        android:text="user111"
-        android:textSize="25dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
+    <ImageView
         android:id="@+id/back_button"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="42dp"
-        android:background="@drawable/circular_button"
-        android:backgroundTint="#A7A7A7"
-        android:gravity="center"
+        android:src="@drawable/back_button"
+        android:background="@android:color/transparent"
+        android:contentDescription="Back Button"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
         android:onClick="goBack"
-        android:padding="4dp"
-        android:text="back"
-        android:textColor="#FFFFFF"
+        android:scaleType="centerInside"/>
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="user111"
+        android:textSize="35dp"
+        android:textColor="@android:color/white"
+        android:textStyle="normal" />
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_below="@id/username"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_profile_picture"
+        android:contentDescription="Profile Image" />
+
+    <Button
+        android:id="@+id/edit_profile_button"
+        android:layout_width="160dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/profile_image"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:onClick="editProfile"
+        android:text="Edit Profile"
+        android:textColor="@android:color/white"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textStyle="normal" />
+
+    <TextView
+        android:id="@+id/full_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/edit_profile_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="First Last"
+        android:textSize="40sp"
+        android:textColor="@android:color/white"
+        android:textStyle="normal" />
+
+    <Button
+        android:id="@+id/log_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/full_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:text="Log Out"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#CE4F4F"
+        android:onClick="logOut"
+        android:padding="10dp"
+        android:textSize="24sp"
+        android:textStyle="normal" />
 
 
-    <!-- Other UI elements can go here -->
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

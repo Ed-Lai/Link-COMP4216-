@@ -1,11 +1,14 @@
 package comp5216.sydney.edu.au.link;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class UserProfile {
+public class UserProfile{
 
     private String userId;
     private String email;
@@ -16,20 +19,21 @@ public class UserProfile {
     private String profilePictureUrl;
     private String location;
     private ArrayList<String> interests;
-    private ArrayList<String> preferences;
+    private String preferences;
     private boolean isVisible;
     private String relationshipStatus;
+    private String hometown;
     private ArrayList<String> personInMatch;
 
     private static final String DEFAULT_PROFILE_PICTURE_URL =
             "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
     private static final int DEFAULT_AGE = 18;  // Default age
     private static final String DEFAULT_LOCATION = "Unknown";  // Default location
-    private static final ArrayList<String> DEFAULT_INTERESTS = new ArrayList<>();  // Default empty interests list
-    private static final ArrayList<String> DEFAULT_PREFERENCES = new ArrayList<>();  // Default empty preferences list
+    private static final ArrayList<String> DEFAULT_INTERESTS = new ArrayList<String>();  // Default empty interests
+    private static final String DEFAULT_PREFERENCES = "";  // Default empty preferences
     private static final boolean DEFAULT_VISIBILITY = true;  // By default, user is visible
     private static final String DEFAULT_RELATIONSHIP_STATUS = "Single";  // Default relationship status
-
+    private static final String DEFAULT_HOMETOWN = "Earth";
     // Default constructor is needed for Firebase/Room and other ORM tools
     public UserProfile() {
         // Required empty constructor
@@ -49,8 +53,10 @@ public class UserProfile {
         this.preferences = DEFAULT_PREFERENCES;
         this.isVisible = DEFAULT_VISIBILITY;
         this.relationshipStatus = DEFAULT_RELATIONSHIP_STATUS;
+        this.hometown = DEFAULT_HOMETOWN;
         this.personInMatch = new ArrayList<>();
     }
+
 
     // Getters and Setters
 
@@ -128,18 +134,18 @@ public class UserProfile {
     }
 
     public ArrayList<String> getInterests() {
-        return interests;
+        return this.interests;
     }
 
     public void setInterests(ArrayList<String> interests) {
         this.interests = interests;
     }
 
-    public ArrayList<String> getPreferences() {
+    public String getPreferences() {
         return preferences;
     }
 
-    public void setPreferences(ArrayList<String> preferences) {
+    public void setPreferences(String preferences) {
         this.preferences = preferences;
     }
 
@@ -158,6 +164,15 @@ public class UserProfile {
     public void setRelationshipStatus(String relationshipStatus) {
         this.relationshipStatus = relationshipStatus;
     }
+
+    public String getHometown () {
+        return this.hometown;
+    }
+
+    public void setHometown (String hometown){
+        this.hometown = hometown;
+    }
+
 
 }
 
