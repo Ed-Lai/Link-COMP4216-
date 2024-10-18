@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                         String gender = document.getString("gender");
                         Long age = document.getLong("age");
                         String ageString = age != null ? age.toString() : "";
-                        String location = document.getString("location");
+                        String hometown = document.getString("hometown");
                         String relationshipStatus = document.getString("relationshipStatus");
                         boolean visible = document.getBoolean("visible");
                         String visibleString = visible ? "Yes" : "No";  // Convert boolean to Yes/No string
@@ -159,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
                         String interests = document.getString("interests");
 
                         // Save the data to local file for later use
-                        putDataInSharedPref(userId, name, username, gender, ageString, location,
+                        putDataInSharedPref(userId, name, username, gender, ageString, hometown,
                                 relationshipStatus, visibleString, preference, photoUrl, interests);
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
@@ -176,7 +176,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void putDataInSharedPref(String userId, String name, String username, String gender, String age,
-                                     String location, String relationshipStatus, String visible,
+                                     String hometown, String relationshipStatus, String visible,
                                      String preference, String photoUrl, String interests) {
         // Save data to SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfilePrefs", MODE_PRIVATE);
@@ -188,7 +188,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("username", username);
         editor.putString("gender", gender);
         editor.putString("age", age);  // Store age as a string
-        editor.putString("location", location);
+        editor.putString("hometown", hometown);
         editor.putString("relationshipStatus", relationshipStatus);
         editor.putBoolean("visible", visible.equals("Yes"));  // Store visible as boolean
         editor.putString("preference", preference);

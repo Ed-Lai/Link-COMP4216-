@@ -131,7 +131,7 @@ public class EditProfilePage extends AppCompatActivity {
         username = userSP.getString("username", "");
         gender = userSP.getString("gender", "");
         age = userSP.getString("age", "");
-        hometown = userSP.getString("location", "");
+        hometown = userSP.getString("hometown", "");
         relationshipStatus = userSP.getString("relationshipStatus", "");
         isVisible = userSP.getBoolean("visible", true);
         preference = userSP.getString("preference", "");

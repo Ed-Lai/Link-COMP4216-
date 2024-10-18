@@ -2,6 +2,7 @@ package comp5216.sydney.edu.au.link;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -12,11 +13,14 @@ import android.location.Location;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -64,18 +68,19 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private Location currentLocation;
     private FirebaseFirestore firestore;
-    BottomNavigationView navBar;
     private List<Place> venueList;
     private List<Place> filteredList;
     private RecyclerView recyclerView;
     private VenueAdapter venueAdapter;
     private SearchView searchBar;
+    private BottomNavigationView bottomNavigationView;
 
     private FirebaseUser currentUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         initFirestore();
 
@@ -215,36 +220,33 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
+
+        mMap.setOnMapClickListener(latLng -> {
+            recyclerView.setVisibility(View.GONE);
+            changeCornerRadius(searchBar, "closed");
+            hideKeyboard();
+        });
     }
 
     private void setupNavigationButtons() {
-        // Home button click event
-        ImageView homeButton = findViewById(R.id.nav_home);
-        homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        bottomNavigationView = findViewById(R.id.navBar);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                //startActivity(new Intent(MainActivity.this, MainActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                startActivity(new Intent(MainActivity.this, AccountPage.class));
+                return true;
             }
+
+            // TODO: add match page once completed
+            else if (itemId == R.id.navigation_matches) {
+                return true;
+            }
+            return false;
         });
 
-        // Notification button click event
-        ImageView notificationButton = findViewById(R.id.nav_notification);
-        notificationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
-//                startActivity(intent);
-            }
-        });
-
-        // Profile button click event
-        ImageView profileButton = findViewById(R.id.nav_profile);
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AccountPage.class);
-                startActivity(intent);
-            }
-        });
     }
 
     private String formatOpeningHours (OpeningHours openingHours){
@@ -327,12 +329,21 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                recyclerView.setVisibility(View.VISIBLE);
-                changeCornerRadius(searchBar, "open");
-                filterPlaces(newText);
+
+                if (newText.isEmpty()) {
+                    changeCornerRadius(searchBar, "closed");
+                    recyclerView.setVisibility(View.GONE);
+                }
+                else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    changeCornerRadius(searchBar, "open");
+                    filterPlaces(newText);
+                }
+
                 return true;
             }
         });
+
 
     }
 
@@ -377,6 +388,14 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
         venueAdapter.filterList(filteredList);
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = getCurrentFocus();
+        if (view != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
 }

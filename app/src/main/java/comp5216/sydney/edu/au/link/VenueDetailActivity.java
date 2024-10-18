@@ -110,7 +110,8 @@ public class VenueDetailActivity extends AppCompatActivity {
                 promptCheckOut(placeName);
             } else {
                 // Display a message to check out from the current place first
-                Toast.makeText(VenueDetailActivity.this, "Already checked in at " + currentCheckedInPlace + ". Please check out first.", Toast.LENGTH_LONG).show();
+                Toast.makeText(VenueDetailActivity.this, "Already checked in at " +
+                        currentCheckedInPlace + ". Please check out first.", Toast.LENGTH_LONG).show();
             }
         });
     }

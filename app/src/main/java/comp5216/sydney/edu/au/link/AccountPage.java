@@ -1,17 +1,23 @@
 package comp5216.sydney.edu.au.link;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -55,35 +61,6 @@ public class AccountPage extends AppCompatActivity {
     }
 
 
-    private void setupNavigationButtons() {
-        // Home button click event
-        ImageView homeButton = findViewById(R.id.nav_home);
-        homeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        // Notification button click event
-        ImageView notificationButton = findViewById(R.id.nav_notification);
-        notificationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //                Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
-                //                startActivity(intent);
-            }
-        });
-
-        // Profile button click event
-        ImageView profileButton = findViewById(R.id.nav_profile);
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
-    }
-
     private void setupUI() {
         setContentView(R.layout.account_page);
         usernameTextView = findViewById(R.id.username);
@@ -97,19 +74,33 @@ public class AccountPage extends AppCompatActivity {
                 .centerCrop()
                 .placeholder(R.drawable.default_profile_picture)
                 .into(userPhotoView);
-        setupNavigationButtons();
     }
 
     private void logOut() {
-        SharedPreferences.Editor editor = userSP.edit();
-        editor.clear();
-        editor.apply();
-        FirebaseAuth.getInstance().signOut();
-        Intent intent = new Intent(AccountPage.this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+
+        new AlertDialog.Builder(AccountPage.this)
+                .setTitle("Confirm Logout")
+                .setMessage("Are you sure you want to log out?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        SharedPreferences.Editor editor = userSP.edit();
+                        editor.clear();
+                        editor.apply();
+
+                        FirebaseAuth.getInstance().signOut();
+
+                        Intent intent = new Intent(AccountPage.this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
+
 
     private void loadUserProfileFromSharedPreferences() {
         fullName = userSP.getString("name", "");

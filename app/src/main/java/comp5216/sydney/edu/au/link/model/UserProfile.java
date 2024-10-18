@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserProfile implements Parcelable {
+public class UserProfile{
 
     private String userId;
     private String email;
@@ -51,59 +51,6 @@ public class UserProfile implements Parcelable {
         this.isVisible = DEFAULT_VISIBILITY;
         this.relationshipStatus = DEFAULT_RELATIONSHIP_STATUS;
         this.hometown = DEFAULT_HOMETOWN;
-    }
-
-    // Parcelable constructor
-    protected UserProfile(Parcel in) {
-        userId = in.readString();
-        email = in.readString();
-        username = in.readString();
-        name = in.readString();
-        gender = in.readString();
-        age = in.readInt();
-        profilePictureUrl = in.readString();
-        location = in.readString();
-        interests = in.readString();
-        preferences = in.readString();
-        isVisible = in.readByte() != 0;  // Boolean read
-        relationshipStatus = in.readString();
-        hometown = in.readString();
-    }
-
-    // Write object data to Parcel
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(userId);
-        dest.writeString(email);
-        dest.writeString(username);
-        dest.writeString(name);
-        dest.writeString(gender);
-        dest.writeInt(age);
-        dest.writeString(profilePictureUrl);
-        dest.writeString(location);
-        dest.writeString(interests);
-        dest.writeString(preferences);
-        dest.writeByte((byte) (isVisible ? 1 : 0));  // Boolean write
-        dest.writeString(relationshipStatus);
-        dest.writeString(hometown);
-    }
-
-    // Parcelable configuration
-    public static final Creator<UserProfile> CREATOR = new Creator<UserProfile>() {
-        @Override
-        public UserProfile createFromParcel(Parcel in) {
-            return new UserProfile(in);
-        }
-
-        @Override
-        public UserProfile[] newArray(int size) {
-            return new UserProfile[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
 

@@ -12,62 +12,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Bottom Navigation Bar -->
-    <LinearLayout
-        android:id="@+id/bottom_navigation"
-        android:layout_width="400dp"
-        android:layout_height="100dp"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/navigation_background"
-        android:orientation="horizontal"
-        android:gravity="center">
+        app:menu="@menu/navbar_menu"
+        app:backgroundTint="@color/navBar_colour"
+        app:itemIconTint="@drawable/nav_item_selector"
+        app:itemTextColor="@drawable/nav_item_selector"
+        app:itemIconSize="36dp"
+        app:itemPaddingTop="15dp"
+        app:itemActiveIndicatorStyle="@color/navBar_colour"
+        />
 
-    <!-- Home Button -->
-        <ImageView
-            android:id="@+id/nav_home"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:contentDescription="Home"
-            android:src="@drawable/ic_home" />
-
-    <!-- Notification Button -->
-        <!-- Notification Button with Red Dot -->
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1">
-
-            <ImageView
-                android:id="@+id/nav_notification"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_notification"
-                android:contentDescription="Notifications" />
-
-            <!-- Red Dot -->
-            <View
-                android:id="@+id/notification_badge"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="40dp"
-                android:background="@drawable/red_dot"
-                android:visibility="gone"/>
-        </RelativeLayout>
-
-    <!-- Profile Button -->
-    <ImageView
-        android:id="@+id/nav_profile"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_weight="1"
-        android:src="@drawable/ic_profile"
-    android:contentDescription="Profile" />
-</LinearLayout>
 
     <SearchView
         android:id="@+id/searchBar"
