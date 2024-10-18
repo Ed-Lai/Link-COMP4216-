@@ -1,4 +1,4 @@
-package comp5216.sydney.edu.au.link.model;
+package comp5216.sydney.edu.au.link;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -18,7 +18,7 @@ public class UserProfile{
     private int age;
     private String profilePictureUrl;
     private String location;
-    private String interests;
+    private ArrayList<String> interests;
     private String preferences;
     private boolean isVisible;
     private String relationshipStatus;
@@ -29,7 +29,7 @@ public class UserProfile{
             "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
     private static final int DEFAULT_AGE = 18;  // Default age
     private static final String DEFAULT_LOCATION = "Unknown";  // Default location
-    private static final String DEFAULT_INTERESTS = "";  // Default empty interests
+    private static final ArrayList<String> DEFAULT_INTERESTS = new ArrayList<String>();  // Default empty interests
     private static final String DEFAULT_PREFERENCES = "";  // Default empty preferences
     private static final boolean DEFAULT_VISIBILITY = true;  // By default, user is visible
     private static final String DEFAULT_RELATIONSHIP_STATUS = "Single";  // Default relationship status
@@ -133,19 +133,19 @@ public class UserProfile{
         this.location = location;
     }
 
-    public List<String> getInterests() {
-        return interests;
+    public ArrayList<String> getInterests() {
+        return this.interests;
     }
 
-    public void setInterests(List<String> interests) {
+    public void setInterests(ArrayList<String> interests) {
         this.interests = interests;
     }
 
-    public List<String> getPreferences() {
+    public String getPreferences() {
         return preferences;
     }
 
-    public void setPreferences(List<String> preferences) {
+    public void setPreferences(String preferences) {
         this.preferences = preferences;
     }
 

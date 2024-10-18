@@ -22,6 +22,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+
+import comp5216.sydney.edu.au.link.MainActivity;
 import comp5216.sydney.edu.au.link.Match.MatchActivity;
 import comp5216.sydney.edu.au.link.R;
 
@@ -114,10 +117,6 @@ public class LoginActivity extends AppCompatActivity {
                         if (user != null) {
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             loadUserDataFromFirestore(user.getUid());
-                            // Navigate to main activity
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();  // Optional: close the login activity
                         }
                     } else {
                         // Sign-in failed, display a message to the user
@@ -159,13 +158,14 @@ public class LoginActivity extends AppCompatActivity {
                         String visibleString = visible ? "Yes" : "No";  // Convert boolean to Yes/No string
                         String preference = document.getString("preference");
                         String photoUrl = document.getString("profilePictureUrl");
-                        String interests = document.getString("interests");
+                        ArrayList<String> interests = (ArrayList<String>) document.get("interests");
 
                         // Save the data to local file for later use
                         putDataInSharedPref(userId, name, username, gender, ageString, hometown,
                                 relationshipStatus, visibleString, preference, photoUrl, interests);
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
+                        finish();
                     } else {
                         Log.d("Firestore", "No such document");
                     }
@@ -180,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void putDataInSharedPref(String userId, String name, String username, String gender, String age,
                                      String hometown, String relationshipStatus, String visible,
-                                     String preference, String photoUrl, String interests) {
+                                     String preference, String photoUrl, ArrayList<String> interests) {
         // Save data to SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfilePrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -196,7 +196,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.putBoolean("visible", visible.equals("Yes"));  // Store visible as boolean
         editor.putString("preference", preference);
         editor.putString("photoUrl", photoUrl);
-        editor.putString("interests", interests);
+        editor.putString("interests", TextUtils.join(", ", interests));
         editor.apply();
 
     }

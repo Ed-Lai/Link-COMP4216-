@@ -183,7 +183,9 @@
         android:hint="Your interests"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
-        android:textSize="15sp" />
+        android:textSize="15sp"
+        android:focusable="false"
+        android:clickable="true"/>
 
     <!-- Gender Label -->
     <TextView

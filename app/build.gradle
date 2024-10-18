@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-//    id 'com.google.gms.google-services'
     id("com.google.gms.google-services")
 }
 
@@ -46,42 +45,31 @@ dependencies {
     implementation libs.firebase.firestore
     implementation libs.room.common
     implementation libs.firebase.auth
-
     implementation libs.recyclerview
     testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
+
     implementation 'com.github.bumptech.glide:glide:4.15.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
+    //annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
 
-    // Import the Firebase BoM
+// Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:33.2.0')
-    // When using the BoM, don't specify versions in Firebase dependencies
+// Firebase Analytics
     implementation 'com.google.firebase:firebase-analytics'
-    // Use to adjust the layout
-    implementation 'com.google.android.material:material:1.9.0'
-    implementation libs.firebase.firestore
-    testImplementation libs.junit
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
-    implementation 'de.hdodenhof:circleimageview:3.1.0'
-
-    implementation 'com.google.firebase:firebase-auth:21.0.1'
-    // Import the Firebase BoM
-    implementation platform('com.google.firebase:firebase-bom:33.2.0')
-    // When using the BoM, don't specify versions in Firebase dependencies
-    implementation 'com.google.firebase:firebase-analytics'
+// Firebase Storage
     implementation("com.google.firebase:firebase-storage")
 
-    implementation 'com.github.bumptech.glide:glide:4.15.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.1'
-
-
-    // Import for navigation bar
+// Material Design
     implementation 'com.google.android.material:material:1.9.0'
+
+// Circle ImageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+// Android Test
+    androidTestImplementation libs.ext.junit
+    androidTestImplementation libs.espresso.core
+
 
 }
 
-apply plugin: 'com.google.gms.google-services'
 
 

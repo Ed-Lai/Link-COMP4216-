@@ -33,6 +33,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,11 +63,41 @@ public class EditProfilePage extends AppCompatActivity {
     }
 
     private void setClickListener() {
-        locationInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showCountryCityDialog(); // Call the method to show the dialog
+        locationInput.setOnClickListener(v -> {
+            showCountryCityDialog(); // Call the method to show the dialog
+        });
+        inputInterets.setOnClickListener(v -> {
+            // Create an AlertDialog Builder
+            AlertDialog.Builder builder = new AlertDialog.Builder(EditProfilePage.this);
+            builder.setTitle("Add Interest");
+
+            // Create an EditText for user input
+            final EditText input = new EditText(EditProfilePage.this);
+            if (inputInterets.getText().toString().isEmpty()) {
+                input.setHint("Add your interest, Separate with \",\"");
+            } else {
+                input.setText(inputInterets.getText().toString());
             }
+
+            builder.setView(input);
+
+            // Set the "Add" button
+            builder.setPositiveButton("Add", (dialog, which) -> {
+                // Get the input interest and trim leading/trailing spaces
+                String interest = input.getText().toString().trim();
+
+                if (!interest.isEmpty()) {
+                    // Update the displayed interests
+                    inputInterets.setText(interest);
+                }
+            });
+
+            // Set the "Cancel" button
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+            // Show the dialog
+            builder.show();
+
         });
         ageInput.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -218,7 +250,9 @@ public class EditProfilePage extends AppCompatActivity {
         editor.putString("gender", genderText.getText().toString());
         updatedData.put("age", Integer.parseInt(ageInput.getText().toString()));
         editor.putString("age", ageInput.getText().toString());
-        updatedData.put("interests", inputInterets.getText().toString());
+        ArrayList<String> interestsList = new ArrayList<>(Arrays.asList(inputInterets.getText()
+                .toString().split("\\s*,\\s*")));
+        updatedData.put("interests", interestsList);
         editor.putString("interests", inputInterets.getText().toString());
         updatedData.put("hometown", locationInput.getText().toString());
         editor.putString("hometown", locationInput.getText().toString());
