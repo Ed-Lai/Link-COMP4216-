@@ -1,5 +1,6 @@
 package comp5216.sydney.edu.au.link.Match;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ public class InterestsAdapter extends RecyclerView.Adapter<InterestsAdapter.Inte
     @Override
     public void onBindViewHolder(@NonNull InterestViewHolder holder, int position) {
         holder.interestTextView.setText(interestsList.get(position));
+        holder.interestTextView.setTextColor(Color.WHITE);
     }
 
     @Override

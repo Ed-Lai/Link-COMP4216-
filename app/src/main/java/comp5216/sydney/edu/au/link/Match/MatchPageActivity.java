@@ -68,7 +68,7 @@ public class MatchPageActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            Toast.makeText(this, "UserID Logged in user ID: " + userId, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "UserID Logged in user ID: " + userId, Toast.LENGTH_SHORT).show();
         } else {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
