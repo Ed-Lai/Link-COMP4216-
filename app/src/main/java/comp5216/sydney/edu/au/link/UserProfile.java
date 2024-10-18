@@ -4,7 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class UserProfile{
 
@@ -21,6 +23,7 @@ public class UserProfile{
     private boolean isVisible;
     private String relationshipStatus;
     private String hometown;
+    private ArrayList<String> personInMatch;
 
     private static final String DEFAULT_PROFILE_PICTURE_URL =
             "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
@@ -51,96 +54,106 @@ public class UserProfile{
         this.isVisible = DEFAULT_VISIBILITY;
         this.relationshipStatus = DEFAULT_RELATIONSHIP_STATUS;
         this.hometown = DEFAULT_HOMETOWN;
+        this.personInMatch = new ArrayList<>();
     }
 
 
-        // Getters and Setters
+    // Getters and Setters
 
-    public String getUserId () {
+    public ArrayList<String> getPersonInMatch(){ return personInMatch;}
+
+    public void addPersonInMatch(String personInMatch){
+        this.personInMatch.add(personInMatch);
+    }
+    public void deletePersonInMatch(String personInMatch){
+        this.personInMatch.remove(personInMatch);
+    }
+
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId (String userId){
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public String getEmail () {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail (String email){
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public String getUsername () {
+    public String getUsername() {
         return username;
     }
 
-    public void setUsername (String username){
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getName () {
+    public String getName() {
         return name;
     }
 
-    public void setName (String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getGender () {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender (String gender){
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
-    public int getAge () {
+    public int getAge() {
         return age;
     }
 
-    public void setAge ( int age){
+    public void setAge(int age) {
         this.age = age;
     }
 
-    public String getProfilePictureUrl () {
+    public String getProfilePictureUrl() {
         return profilePictureUrl;
     }
 
-    public void setProfilePictureUrl (String profilePictureUrl){
+    public void setProfilePictureUrl(String profilePictureUrl) {
         this.profilePictureUrl = profilePictureUrl;
     }
 
-    public String getLocation () {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation (String location){
+    public void setLocation(String location) {
         this.location = location;
     }
 
-    public String getInterests () {
+    public List<String> getInterests() {
         return interests;
     }
 
-    public void setInterests (String interests){
+    public void setInterests(List<String> interests) {
         this.interests = interests;
     }
 
-    public String getPreferences () {
+    public List<String> getPreferences() {
         return preferences;
     }
 
-    public void setPreferences (String preferences){
+    public void setPreferences(List<String> preferences) {
         this.preferences = preferences;
     }
 
-    public boolean isVisible () {
+    public boolean isVisible() {
         return isVisible;
     }
 
-    public void setVisible ( boolean isVisible){
+    public void setVisible(boolean isVisible) {
         this.isVisible = isVisible;
     }
 
@@ -148,7 +161,7 @@ public class UserProfile{
         return this.relationshipStatus;
     }
 
-    public void setRelationshipStatus (String relationshipStatus){
+    public void setRelationshipStatus(String relationshipStatus) {
         this.relationshipStatus = relationshipStatus;
     }
 

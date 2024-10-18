@@ -54,6 +54,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import comp5216.sydney.edu.au.link.Match.MatchPageActivity;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
 
 
@@ -80,8 +81,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
+      
         initFirestore();
 
         // Initialize the Places API
@@ -242,6 +242,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
             // TODO: add match page once completed
             else if (itemId == R.id.navigation_matches) {
+                startActivity(new Intent(MainActivity.this, MatchPageActivity.class));
                 return true;
             }
             return false;

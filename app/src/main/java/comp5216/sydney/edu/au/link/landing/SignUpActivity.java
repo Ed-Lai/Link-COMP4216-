@@ -18,7 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 
 import comp5216.sydney.edu.au.link.R;
-import comp5216.sydney.edu.au.link.model.UserProfile;
+import comp5216.sydney.edu.au.link.UserProfile;
 
 public class SignUpActivity extends AppCompatActivity {
 

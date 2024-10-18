@@ -22,7 +22,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import comp5216.sydney.edu.au.link.MainActivity;
+import comp5216.sydney.edu.au.link.Match.MatchActivity;
 import comp5216.sydney.edu.au.link.R;
 
 
@@ -115,6 +115,9 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             loadUserDataFromFirestore(user.getUid());
                             // Navigate to main activity
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();  // Optional: close the login activity
                         }
                     } else {
                         // Sign-in failed, display a message to the user

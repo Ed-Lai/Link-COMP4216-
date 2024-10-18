@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="comp5216.sydney.edu.au.link">
+    xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -46,6 +45,9 @@
         <activity android:name=".VenueDetailActivity" />
         <activity android:name=".PrefSetting"></activity>
 
+        <activity android:name=".Match.MatchActivity"/>
+        <activity android:name=".Match.MatchSuccessActivity"/>
+        <activity android:name=".Match.MatchPageActivity"/>
     </application>
 
 </manifest>

@@ -1,0 +1,42 @@
+[33mcommit 2884241c174c994b991fbc332c778d1633327dba[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Jian <jcho2959@uni.sydney.edu.au>
+Date:   Fri Sep 13 17:00:49 2024 +1000
+
+    chore: firebase firestore setup
+
+[33mcommit b24647bb13c5867c2f1a4bef2247cc9bf43010e0[m
+Author: Shiraj Shawman <ssha7239@uni.sydney.edu.au>
+Date:   Thu Sep 12 17:12:57 2024 +1000
+
+     first
+
+[33mcommit 605e503bbb2c2498832f19b937018b07c1b8e51c[m[33m ([m[1;31morigin/Sarah[m[33m)[m
+Merge: f5ce814 2d4e848
+Author: Jian <jcho2959@uni.sydney.edu.au>
+Date:   Thu Sep 12 17:08:32 2024 +1000
+
+    chore: android project setup
+
+[33mcommit f5ce8147d388ee5daae55b5d740801afd953591e[m
+Author: Jian <jcho2959@uni.sydney.edu.au>
+Date:   Thu Sep 12 17:04:56 2024 +1000
+
+    chore: android project setup
+
+[33mcommit 2d4e848c0d2abc9a5dc4644e56f6bbb2dfcc27de[m
+Author: sabb7296 <101198543+sabb7296@users.noreply.github.com>
+Date:   Thu Sep 12 17:00:15 2024 +1000
+
+    first commit -s
+
+[33mcommit be8267887d197a068f4890b75e918bc31445f56a[m[33m ([m[1;31morigin/Shiraj[m[33m)[m
+Author: Ed-Lai <71245802+Ed-Lai@users.noreply.github.com>
+Date:   Thu Sep 12 16:55:12 2024 +1000
+
+    Create test.md
+
+[33mcommit 7171616d0fc995e11adfb436eddb26a10dbcab1c[m
+Author: Ed-Lai <71245802+Ed-Lai@users.noreply.github.com>
+Date:   Thu Sep 12 16:11:00 2024 +1000
+
+    Initial commit
