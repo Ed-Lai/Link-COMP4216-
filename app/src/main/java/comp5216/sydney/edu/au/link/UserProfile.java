@@ -3,12 +3,13 @@ package comp5216.sydney.edu.au.link;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class UserProfile{
+public class UserProfile implements Serializable {
 
     private String userId;
     private String email;

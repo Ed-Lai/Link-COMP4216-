@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_gradient">
+
+    <ImageView
+        android:id="@+id/profile_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/default_profile_picture"
+        android:scaleType="centerCrop"
+        android:contentDescription="Profile Image" />
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:src="@drawable/back_button"
+        android:background="@android:color/transparent"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:scaleType="centerInside"
+        android:contentDescription="Back Button" />
+
+    <ImageView
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/profile_image"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/bar"
+        android:scaleType="fitXY"
+        android:layout_centerHorizontal="true"
+        app:tint="@color/places_autocomplete_error_message" />
+
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/line"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="20dp"
+        android:text="Name"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:layout_centerHorizontal="true"/>
+
+
+    <TextView
+        android:id="@+id/label_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_below="@id/text_name"
+        android:layout_marginTop="20dp"
+        android:text="Age"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_name"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="150dp"
+        android:text="18"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/label_interests"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_below="@id/text_age"
+        android:layout_marginTop="20dp"
+        android:text="Interests"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_interests"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_age"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="150dp"
+        android:text="Reading, Traveling, Coding"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/label_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_below="@id/text_interests"
+        android:layout_marginTop="20dp"
+        android:text="Gender"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_interests"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="150dp"
+        android:text="Male"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/label_hometown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_below="@id/text_gender"
+        android:layout_marginTop="20dp"
+        android:text="Hometown"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_hometown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_gender"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="150dp"
+        android:text="Sydney, Australia"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/label_relationship_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="35dp"
+        android:layout_below="@id/text_hometown"
+        android:layout_marginTop="20dp"
+        android:text="Status"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/text_relationship_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_hometown"
+        android:layout_marginStart="150dp"
+        android:layout_marginTop="20dp"
+        android:text="Single"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+</RelativeLayout>

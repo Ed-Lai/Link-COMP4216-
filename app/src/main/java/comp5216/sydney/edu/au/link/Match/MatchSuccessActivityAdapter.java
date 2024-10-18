@@ -3,6 +3,7 @@ package comp5216.sydney.edu.au.link.Match;
 import static java.security.AccessController.getContext;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,13 @@ public class MatchSuccessActivityAdapter extends ArrayAdapter<UserProfile> {
             if (deleteRequestListener != null) {
                 deleteRequestListener.onDeleteRequest(item);
             }
+        });
+        photo.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), UserDetailActivity.class);
+            intent.putExtra("userProfile", item);
+
+            // Use context to start the activity
+            getContext().startActivity(intent);
         });
 
         return convertView;

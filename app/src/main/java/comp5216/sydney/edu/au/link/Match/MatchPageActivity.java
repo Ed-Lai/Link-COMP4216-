@@ -97,6 +97,7 @@ public class MatchPageActivity extends AppCompatActivity {
             Intent intent = new Intent(MatchPageActivity.this, MatchSuccessActivity.class);
             startActivity(intent);
         });
+        
 
 
 
@@ -358,6 +359,11 @@ public class MatchPageActivity extends AppCompatActivity {
         matchedUserId = person.getUserId();
         matchName.setText(person.getName());
         genderText.setText(person.getGender());
+        matchUserPhoto.setOnClickListener(v -> {
+            Intent intent = new Intent(MatchPageActivity.this, UserDetailActivity.class);
+            intent.putExtra("userProfile", person);
+            startActivity(intent);
+        });
         // Loading user images using Glide
         if (person.getProfilePictureUrl() != null && !person.getProfilePictureUrl().isEmpty()) {
             Glide.with(this).load(person.getProfilePictureUrl()).into(matchUserPhoto);

@@ -130,13 +130,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-
+    <TextView
+        android:id="@+id/match_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click Photo Know More!"
+        app:layout_constraintTop_toBottomOf="@id/interestRecyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="16dp" />
     <Button
         android:id="@+id/receivedRequestsButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Received Requests"
-        app:layout_constraintTop_toBottomOf="@id/interestRecyclerView"
+        app:layout_constraintTop_toBottomOf="@id/match_end"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"
