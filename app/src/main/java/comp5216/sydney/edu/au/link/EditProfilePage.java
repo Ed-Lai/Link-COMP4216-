@@ -473,7 +473,7 @@ public class EditProfilePage extends AppCompatActivity {
         final NumberPicker numberPicker = new NumberPicker(EditProfilePage.this);
 
         // Set the range for the NumberPicker
-        numberPicker.setMinValue(14);
+        numberPicker.setMinValue(18);
         numberPicker.setMaxValue(100);
         String currentAge = ageInput.getText().toString();
         if (!currentAge.isEmpty()) {
