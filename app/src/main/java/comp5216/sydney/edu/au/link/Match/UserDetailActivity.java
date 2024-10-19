@@ -57,7 +57,7 @@ public class UserDetailActivity extends AppCompatActivity {
                 textInterests.setText("No interests available");
             }
             textGender.setText(userProfile.getGender());
-            textHometown.setText(userProfile.getLocation());
+            textHometown.setText(userProfile.getHometown());
             textRelationshipStatus.setText(userProfile.getRelationshipStatus());
 
             // Load the user's avatar
