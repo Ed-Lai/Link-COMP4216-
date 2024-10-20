@@ -5,13 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.ArrayList;
-
-import comp5216.sydney.edu.au.link.R;
 
 public class InterestsAdapter extends RecyclerView.Adapter<InterestsAdapter.InterestViewHolder> {
     private ArrayList<String> interestsList;

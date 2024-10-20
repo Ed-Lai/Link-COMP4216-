@@ -1,7 +1,5 @@
 package comp5216.sydney.edu.au.link.Match;
 
-import static java.security.AccessController.getContext;
-
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -10,12 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
-
 import java.util.List;
-
 import comp5216.sydney.edu.au.link.R;
 import comp5216.sydney.edu.au.link.UserProfile;
 
