@@ -104,22 +104,36 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         venueAdapter.setOnItemClickListener(new VenueAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Place place) {
-                // Create an intent to start the new activity
-                Intent intent = new Intent(MainActivity.this, VenueDetailActivity.class);
-                intent.putExtra("placeName", place.getName());
-                intent.putExtra("address", place.getAddress());
+                String placeId = place.getId();
+                List<Place.Field> placeFields = Arrays.asList(
+                        Place.Field.NAME,
+                        Place.Field.ADDRESS,
+                        Place.Field.OPENING_HOURS,
+                        Place.Field.PHOTO_METADATAS
+                );
+                FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, placeFields);
 
-                // Format opening hours
-                String openingHoursFormatted = formatOpeningHours(place.getOpeningHours());
-                intent.putExtra("openingHours", openingHoursFormatted);
+                placesClient.fetchPlace(request).addOnSuccessListener(response -> {
+                    Place fullPlace = response.getPlace();
+                    Intent intent = new Intent(MainActivity.this, VenueDetailActivity.class);
+                    intent.putExtra("placeName", fullPlace.getName());
+                    intent.putExtra("address", fullPlace.getAddress());
 
-                // Fetch and pass the photo metadata
-                if (place.getPhotoMetadatas() != null && !place.getPhotoMetadatas().isEmpty()) {
-                    PhotoMetadata photoMetadata = place.getPhotoMetadatas().get(0);  // Get the first photo
-                    intent.putExtra("photoMetadata", photoMetadata);
-                }
+                    // Format and pass opening hours
+                    String openingHoursFormatted = formatOpeningHours(fullPlace.getOpeningHours());
+                    intent.putExtra("openingHours", openingHoursFormatted);
 
-                startActivity(intent);
+                    // Pass photo metadata if available
+                    if (fullPlace.getPhotoMetadatas() != null && !fullPlace.getPhotoMetadatas().isEmpty()) {
+                        PhotoMetadata photoMetadata = fullPlace.getPhotoMetadatas().get(0);  // Get the first photo
+                        intent.putExtra("photoMetadata", photoMetadata);
+                    }
+
+                    startActivity(intent);
+                }).addOnFailureListener(exception -> {
+                    Log.e("FetchPlace", "Failed to fetch place details: " + exception.getMessage());
+                    Toast.makeText(MainActivity.this, "Failed to get place details: " + exception.getMessage(), Toast.LENGTH_LONG).show();
+                });
             }
         });
 
