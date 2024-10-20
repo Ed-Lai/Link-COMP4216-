@@ -265,10 +265,10 @@ public class EditProfilePage extends AppCompatActivity {
         editor.putString("preference", inputPreference.getText().toString());
         updatedData.put("isVisible", inputVisible.getText().toString().equals("Yes"));
         editor.putBoolean("visible", inputVisible.getText().toString().equals("Yes"));
-        updatedData.put("profilePictureUrl", tempImageUrl);
-        editor.putString("photoUrl", tempImageUrl);
-        updatedData.put("phone", phoneText.getText().toString());
-        editor.putString("phone", phoneText.getText().toString());
+        if (tempImageUrl != null) {
+            updatedData.put("profilePictureUrl", tempImageUrl);
+            editor.putString("photoUrl", tempImageUrl);
+        }
         editor.apply();
 
         // Reference to the Firestore document
@@ -478,7 +478,7 @@ public class EditProfilePage extends AppCompatActivity {
         final NumberPicker numberPicker = new NumberPicker(EditProfilePage.this);
 
         // Set the range for the NumberPicker
-        numberPicker.setMinValue(14);
+        numberPicker.setMinValue(18);
         numberPicker.setMaxValue(100);
         String currentAge = ageInput.getText().toString();
         if (!currentAge.isEmpty()) {
