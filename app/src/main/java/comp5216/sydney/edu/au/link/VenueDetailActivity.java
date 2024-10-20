@@ -11,21 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import android.widget.Toast;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import comp5216.sydney.edu.au.link.landing.LoginActivity;
 
 public class VenueDetailActivity extends AppCompatActivity {
 

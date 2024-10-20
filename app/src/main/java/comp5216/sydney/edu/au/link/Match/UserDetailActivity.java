@@ -6,13 +6,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
-
 import java.util.List;
-
 import comp5216.sydney.edu.au.link.R;
 import comp5216.sydney.edu.au.link.UserProfile;
 
