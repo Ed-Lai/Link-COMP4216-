@@ -27,7 +27,7 @@
         android:layout_height="32dp"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="280dp"
-        android:text="Email/Username"
+        android:text="Email"
         android:textColor="#FFFFFF"
         android:textSize="18dp"
         android:textStyle="bold"/>

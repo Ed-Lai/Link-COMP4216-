@@ -62,7 +62,8 @@ public class MatchSuccessActivityAdapter extends ArrayAdapter<UserProfile> {
         photo.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), UserDetailActivity.class);
             intent.putExtra("userProfile", item);
-
+            intent.putExtra("instagram_handle", item.getUsername());
+            intent.putExtra("phone", item.getPhone());
             // Use context to start the activity
             getContext().startActivity(intent);
         });

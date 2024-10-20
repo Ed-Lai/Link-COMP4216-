@@ -56,6 +56,30 @@
         android:textColor="#FFFFFF"
         android:textStyle="bold" />
 
+    <!-- Name Input -->
+    <EditText
+        android:id="@+id/input_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_marginStart="150dp"
+        android:hint="First Last"
+        android:textColorHint="#686363"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/label_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/input_name"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Full Name"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
     <!-- Email Label -->
     <TextView
         android:id="@+id/label_email"
@@ -67,7 +91,9 @@
         android:text="Email"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_below="@id/input_name"
+        />
 
     <!-- Email Input -->
     <EditText
@@ -89,7 +115,7 @@
         android:layout_alignBaseline="@id/input_username"
         android:layout_marginStart="35dp"
         android:layout_marginTop="20dp"
-        android:text="Username"
+        android:text="Instagram\nUsername"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -102,6 +128,32 @@
         android:layout_marginStart="150dp"
         android:layout_below="@id/input_email"
         android:hint="Your_User_name"
+        android:textColorHint="#686363"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <!-- Phone Label -->
+    <TextView
+        android:id="@+id/label_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/input_phone"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Mobile"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <!-- Phone Input -->
+    <EditText
+        android:id="@+id/input_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="150dp"
+        android:layout_below="@id/input_username"
+        android:layout_marginTop="20dp"
+        android:hint="Phone Number"
         android:textColorHint="#686363"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
@@ -125,37 +177,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="150dp"
-        android:layout_below="@id/input_username"
+        android:layout_below="@id/input_gender"
         android:hint="******************"
         android:textColorHint="#686363"
         android:textColor="#FFFFFF"
         android:textSize="15sp"
         android:inputType="textPassword"/>
-
-    <!-- Name Label -->
-    <TextView
-        android:id="@+id/label_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@id/input_name"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="20dp"
-        android:text="Name"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <!-- Name Input -->
-    <EditText
-        android:id="@+id/input_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/input_password"
-        android:layout_marginStart="150dp"
-        android:hint="First Last"
-        android:textColorHint="#686363"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
 
     <!-- Gender Label -->
     <TextView
@@ -175,7 +202,7 @@
         android:id="@+id/input_gender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/input_name"
+        android:layout_below="@id/input_phone"
         android:layout_marginStart="150dp"
         android:hint="Male/Female"
         android:textColorHint="#686363"

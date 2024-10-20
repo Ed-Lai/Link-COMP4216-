@@ -13,14 +13,11 @@ import android.location.Location;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -52,8 +49,6 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import comp5216.sydney.edu.au.link.Match.MatchPageActivity;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
 
@@ -110,6 +105,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         filteredList = new ArrayList<>(venueList);
 
         venueAdapter = new VenueAdapter(filteredList);
+
         venueAdapter.setOnItemClickListener(new VenueAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Place place) {
@@ -369,8 +365,8 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             if (type.equals("closed")){
                 drawable.setCornerRadius(100);
             }
-
             searchBar.setBackground(drawable);
+
         }
     }
 

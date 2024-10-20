@@ -16,6 +16,7 @@ public class UserProfile implements Serializable {
     private String username;
     private String name;
     private String gender;
+    private String phone;
     private int age;
     private String profilePictureUrl;
     private String location;
@@ -41,12 +42,13 @@ public class UserProfile implements Serializable {
     }
 
     // Constructor with fields
-    public UserProfile(String userId, String email, String username, String name, String gender) {
+    public UserProfile(String userId, String email, String username, String name, String gender, String phone) {
         this.userId = userId;
         this.email = email;
         this.username = username;
         this.name = name;
         this.gender = gender;
+        this.phone = phone;
         this.profilePictureUrl = DEFAULT_PROFILE_PICTURE_URL;
         this.age = DEFAULT_AGE;
         this.location = DEFAULT_LOCATION;
@@ -116,6 +118,14 @@ public class UserProfile implements Serializable {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getPhone() {
+        return this.phone;
     }
 
     public String getProfilePictureUrl() {
