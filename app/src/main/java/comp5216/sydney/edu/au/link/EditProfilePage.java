@@ -262,8 +262,10 @@ public class EditProfilePage extends AppCompatActivity {
         editor.putString("preference", inputPreference.getText().toString());
         updatedData.put("isVisible", inputVisible.getText().toString().equals("Yes"));
         editor.putBoolean("visible", inputVisible.getText().toString().equals("Yes"));
-        updatedData.put("profilePictureUrl", tempImageUrl);
-        editor.putString("photoUrl", tempImageUrl);
+        if (tempImageUrl != null) {
+            updatedData.put("profilePictureUrl", tempImageUrl);
+            editor.putString("photoUrl", tempImageUrl);
+        }
         editor.apply();
 
         // Reference to the Firestore document
