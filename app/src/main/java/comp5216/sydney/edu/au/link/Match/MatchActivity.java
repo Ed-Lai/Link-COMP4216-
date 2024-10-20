@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -19,6 +20,8 @@ import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import comp5216.sydney.edu.au.link.AccountPage;
+import comp5216.sydney.edu.au.link.MainActivity;
 import comp5216.sydney.edu.au.link.R;
 import comp5216.sydney.edu.au.link.UserProfile;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
@@ -30,6 +33,7 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
     private List<UserProfile> matchPersonList;
     private ImageButton imageButton;
     private String currentUserId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +57,6 @@ public class MatchActivity extends AppCompatActivity implements MatchAdapter.OnD
         listView.setAdapter(adapter);
 
         loadMRequestData();
-
-
-
 
     }
     public String getCurrentUserId() {
