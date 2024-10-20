@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import comp5216.sydney.edu.au.link.Match.MatchPageActivity;
 import comp5216.sydney.edu.au.link.landing.LoginActivity;
 
 import com.bumptech.glide.Glide;
@@ -23,21 +24,34 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class AccountPage extends AppCompatActivity {
 
-    private TextView usernameTextView, userFullNameTextView;
+    private TextView instagramHandleTextView, userFullNameTextView;
     private ImageView userPhotoView;
     private Button logOut;
     private String userName;
     private String fullName;
     private String photoUrl;
     private SharedPreferences userSP;
+    private BottomNavigationView bottomNavigationView;
+    private Button edit;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         userSP = getSharedPreferences("UserProfilePrefs", MODE_PRIVATE);
 
         loadUserProfileFromSharedPreferences();
+
+        setupNavigationButtons();
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+                startActivity(new Intent(AccountPage.this, EditProfilePage.class));
+            }
+        });
 
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,11 +77,12 @@ public class AccountPage extends AppCompatActivity {
 
     private void setupUI() {
         setContentView(R.layout.account_page);
-        usernameTextView = findViewById(R.id.username);
-        userFullNameTextView = findViewById(R.id.full_name);
-        userPhotoView = findViewById(R.id.profile_image);
-        logOut = findViewById(R.id.log_out_button);
-        usernameTextView.setText(userName);
+        userFullNameTextView = findViewById(R.id.name);
+        instagramHandleTextView = findViewById(R.id.instagram_handle);
+        userPhotoView = findViewById(R.id.avatarImage);
+        logOut = findViewById(R.id.logout_button);
+        edit = findViewById(R.id.edit_button);
+        instagramHandleTextView.setText(userName);
         userFullNameTextView.setText(fullName);
         Glide.with(this)
                 .load(photoUrl)
@@ -108,6 +123,25 @@ public class AccountPage extends AppCompatActivity {
         photoUrl = userSP.getString("photoUrl", "");
         setupUI();
 
+    }
+
+    private void setupNavigationButtons() {
+        bottomNavigationView = findViewById(R.id.navBar);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_profile);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                startActivity(new Intent(AccountPage.this, MainActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                return true;
+            } else if (itemId == R.id.navigation_matches) {
+                bottomNavigationView.setSelectedItemId(R.id.navigation_matches);
+                startActivity(new Intent(AccountPage.this, MatchPageActivity.class));
+                return true;
+            }
+            return false;
+        });
     }
 
 }

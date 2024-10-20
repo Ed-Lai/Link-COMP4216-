@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import comp5216.sydney.edu.au.link.AccountPage;
 import comp5216.sydney.edu.au.link.MainActivity;
 import comp5216.sydney.edu.au.link.R;
 import comp5216.sydney.edu.au.link.UserProfile;
@@ -55,6 +57,7 @@ public class MatchPageActivity extends AppCompatActivity {
     private ImageButton leftPersonButton;
     private Button receivedRequestsButton;
     private Button acceptedRequestsButton;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +131,7 @@ public class MatchPageActivity extends AppCompatActivity {
         super.onStart();
         processMatchRequests();
         loadMatchedUsers();
+        setupNavigationButtons();
     }
 
 
@@ -428,6 +432,24 @@ public class MatchPageActivity extends AppCompatActivity {
         // Calculate intersection
         set1.retainAll(set2);
         return set1.size();
+    }
+
+    private void setupNavigationButtons() {
+        bottomNavigationView = findViewById(R.id.navBar);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_matches);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_home) {
+                startActivity(new Intent(MatchPageActivity.this, MainActivity.class));
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                startActivity(new Intent(MatchPageActivity.this, AccountPage.class));
+                return true;
+            } else if (itemId == R.id.navigation_matches) {
+                return true;
+            }
+            return false;
+        });
     }
 
 

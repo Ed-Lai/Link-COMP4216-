@@ -6,4 +6,5 @@
     <color name="navBar_colour">#404040</color>
     <color name="navBar_item_colour">#dadada</color>
     <color name="navBar_item_colour_inactive">#707070</color>
+    <color name="red">#ff0000</color>
 </resources>

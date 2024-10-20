@@ -230,6 +230,7 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void setupNavigationButtons() {
         bottomNavigationView = findViewById(R.id.navBar);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.navigation_home) {
@@ -238,16 +239,12 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
             } else if (itemId == R.id.navigation_profile) {
                 startActivity(new Intent(MainActivity.this, AccountPage.class));
                 return true;
-            }
-
-            // TODO: add match page once completed
-            else if (itemId == R.id.navigation_matches) {
+            } else if (itemId == R.id.navigation_matches) {
                 startActivity(new Intent(MainActivity.this, MatchPageActivity.class));
                 return true;
             }
             return false;
         });
-
     }
 
     private String formatOpeningHours (OpeningHours openingHours){
