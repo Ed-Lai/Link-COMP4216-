@@ -43,11 +43,11 @@ import java.util.Map;
 public class EditProfilePage extends AppCompatActivity {
 
     private EditText nameText, usernameText, genderText, ageInput, locationInput,
-            inputRelationshipStatus, inputVisible, inputPreference, inputInterets;
+            inputRelationshipStatus, inputVisible, inputPreference, inputInterets, phoneText;
     private ImageView backButton, userPhotoView;
     private Button editPicture;
     private String userId, fullname, username, gender, age, hometown,
-            relationshipStatus, preference, photoUrl, interests;
+            relationshipStatus, preference, photoUrl, interests, phone;
     private String tempImageUrl;
     private boolean isVisible;
     private SharedPreferences userSP;
@@ -169,6 +169,7 @@ public class EditProfilePage extends AppCompatActivity {
         preference = userSP.getString("preference", "");
         photoUrl = userSP.getString("photoUrl", "");
         interests = userSP.getString("interests", "");
+        phone = userSP.getString("phone", "");
         setUI();
 
     }
@@ -189,6 +190,7 @@ public class EditProfilePage extends AppCompatActivity {
         inputInterets = findViewById(R.id.input_interests);
         userPhotoView = findViewById(R.id.profile_image);
         editPicture = findViewById(R.id.edit_picture_button);
+        phoneText = findViewById(R.id.input_phone);
 
         setClickListener();
 
@@ -202,6 +204,7 @@ public class EditProfilePage extends AppCompatActivity {
         inputVisible.setText(isVisible ? "Yes" : "No");
         inputPreference.setText(preference);
         inputInterets.setText(interests);
+        phoneText.setText(phone);
         Glide.with(this)
                 .load(photoUrl)
                 .centerCrop()
