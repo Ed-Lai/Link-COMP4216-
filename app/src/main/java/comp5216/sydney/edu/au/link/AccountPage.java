@@ -126,6 +126,7 @@ public class AccountPage extends AppCompatActivity {
     private void setupNavigationButtons() {
         bottomNavigationView = findViewById(R.id.navBar);
         bottomNavigationView.setSelectedItemId(R.id.navigation_profile);
+        bottomNavigationView.setSelectedItemId(R.id.navigation_matches);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.navigation_home) {
