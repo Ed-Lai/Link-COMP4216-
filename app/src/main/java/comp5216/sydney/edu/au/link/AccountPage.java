@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class AccountPage extends AppCompatActivity {
 
-    private TextView instagramHandleTextView, userFullNameTextView;
+    private TextView instagramHandleTextView, userFullNameTextView, phoneTextView;
     private ImageView userPhotoView;
     private Button logOut;
     private String userName;
@@ -33,6 +33,7 @@ public class AccountPage extends AppCompatActivity {
     private SharedPreferences userSP;
     private BottomNavigationView bottomNavigationView;
     private Button edit;
+    private String phone;
 
 
     @Override
@@ -77,6 +78,7 @@ public class AccountPage extends AppCompatActivity {
 
     private void setupUI() {
         setContentView(R.layout.account_page);
+        phoneTextView = findViewById(R.id.phone_number);
         userFullNameTextView = findViewById(R.id.name);
         instagramHandleTextView = findViewById(R.id.instagram_handle);
         userPhotoView = findViewById(R.id.avatarImage);
@@ -84,6 +86,7 @@ public class AccountPage extends AppCompatActivity {
         edit = findViewById(R.id.edit_button);
         instagramHandleTextView.setText(userName);
         userFullNameTextView.setText(fullName);
+        phoneTextView.setText(phone);
         Glide.with(this)
                 .load(photoUrl)
                 .centerCrop()
@@ -121,6 +124,7 @@ public class AccountPage extends AppCompatActivity {
         fullName = userSP.getString("name", "");
         userName = userSP.getString("username", "");
         photoUrl = userSP.getString("photoUrl", "");
+        phone = userSP.getString("phone", "");
         setupUI();
 
     }

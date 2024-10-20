@@ -80,7 +80,7 @@
         android:id="@+id/phone_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0429 005 116"
+        android:text="0429005116"
         android:textSize="16sp"
         android:drawableLeft="@drawable/ic_phone"
         android:drawablePadding="8dp"

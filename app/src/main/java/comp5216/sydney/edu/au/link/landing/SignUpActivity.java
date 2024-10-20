@@ -31,6 +31,7 @@ public class SignUpActivity extends AppCompatActivity {
     private TextView inputPassword;
     private TextView inputName;
     private TextView inputGender;
+    private TextView inputPhone;
     private FirebaseFirestore db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,7 @@ public class SignUpActivity extends AppCompatActivity {
         inputPassword = findViewById(R.id.input_password);
         inputName = findViewById(R.id.input_name);
         inputGender = findViewById(R.id.input_gender);
+        inputPhone = findViewById(R.id.input_phone);
 
         db = FirebaseFirestore.getInstance();
 
@@ -86,10 +88,11 @@ public class SignUpActivity extends AppCompatActivity {
                 String password = inputPassword.getText().toString();
                 String name = inputName.getText().toString();
                 String gender = inputGender.getText().toString();
+                String phone = inputPhone.getText().toString();
 
-                if (isSignUpValid(email, username, password, name, gender)) {
+                if (isSignUpValid(email, username, password, name, gender, phone)) {
                     // Call the function to create a new account
-                    createNewAccount(email, username, password, name, gender);
+                    createNewAccount(email, username, password, name, gender, phone);
                 } else {
                     // Show a message to the user explaining what went wrong
                 }
@@ -120,9 +123,9 @@ public class SignUpActivity extends AppCompatActivity {
         builder.show();
     }
 
-    public boolean isSignUpValid(String email, String username, String password, String name, String gender) {
+    public boolean isSignUpValid(String email, String username, String password, String name, String gender, String phone) {
         // Check if any field is empty
-        if (email.isEmpty() || username.isEmpty() || password.isEmpty() || name.isEmpty() || gender.isEmpty()) {
+        if (email.isEmpty() || username.isEmpty() || password.isEmpty() || name.isEmpty() || gender.isEmpty() || phone.isEmpty()) {
             Toast.makeText(this, "All fields are required.", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -160,7 +163,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     // Logic to create a new account, can be further implemented later
-    private void createNewAccount(String email, String username, String password, String name, String gender) {
+    private void createNewAccount(String email, String username, String password, String name, String gender, String phone) {
         // Use Firebase Authentication to create a new user
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -171,7 +174,7 @@ public class SignUpActivity extends AppCompatActivity {
                         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                         // Create a UserProfile object with the user's details
-                        UserProfile userProfile = new UserProfile(userId, email, username, name, gender);
+                        UserProfile userProfile = new UserProfile(userId, email, username, name, gender, phone);
                         CollectionReference userProfiles = FirebaseFirestore.getInstance().collection("userProfiles");
 
                         // Save the user profile to Firestore, using userId as the document ID

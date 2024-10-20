@@ -159,10 +159,11 @@ public class LoginActivity extends AppCompatActivity {
                         String preference = document.getString("preference");
                         String photoUrl = document.getString("profilePictureUrl");
                         ArrayList<String> interests = (ArrayList<String>) document.get("interests");
+                        String phone = document.getString("phone");
 
                         // Save the data to local file for later use
                         putDataInSharedPref(userId, name, username, gender, ageString, hometown,
-                                relationshipStatus, visibleString, preference, photoUrl, interests);
+                                relationshipStatus, visibleString, preference, photoUrl, interests, phone);
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
@@ -180,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void putDataInSharedPref(String userId, String name, String username, String gender, String age,
                                      String hometown, String relationshipStatus, String visible,
-                                     String preference, String photoUrl, ArrayList<String> interests) {
+                                     String preference, String photoUrl, ArrayList<String> interests, String phone) {
         // Save data to SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("UserProfilePrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -197,6 +198,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString("preference", preference);
         editor.putString("photoUrl", photoUrl);
         editor.putString("interests", TextUtils.join(", ", interests));
+        editor.putString("phone", phone);
         editor.apply();
 
     }

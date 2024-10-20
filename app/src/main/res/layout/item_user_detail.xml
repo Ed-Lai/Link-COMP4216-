@@ -50,13 +50,44 @@
         android:textSize="30sp"
         android:layout_centerHorizontal="true"/>
 
+    <!-- Instagram Handle -->
+    <TextView
+        android:id="@+id/instagram_handle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="john_doe"
+        android:textSize="16sp"
+        android:drawableLeft="@drawable/ic_instagram"
+        android:drawableTint="@color/white"
+        android:drawablePadding="8dp"
+        android:layout_below="@id/text_name"
+        android:layout_marginTop="8dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        />
+
+    <!-- Phone Number -->
+    <TextView
+        android:id="@+id/phone_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0429005116"
+        android:textSize="16sp"
+        android:drawableLeft="@drawable/ic_phone"
+        android:drawablePadding="8dp"
+        android:layout_below="@id/instagram_handle"
+        android:layout_marginTop="8dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        />
+
 
     <TextView
         android:id="@+id/label_age"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="35dp"
-        android:layout_below="@id/text_name"
+        android:layout_below="@id/phone_number"
         android:layout_marginTop="20dp"
         android:text="Age"
         android:textColor="#FFFFFF"
@@ -66,7 +97,7 @@
         android:id="@+id/text_age"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/text_name"
+        android:layout_below="@id/phone_number"
         android:layout_marginTop="20dp"
         android:layout_marginStart="150dp"
         android:text="18"

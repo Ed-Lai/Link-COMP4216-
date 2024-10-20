@@ -29,7 +29,7 @@
 
     <SearchView
         android:id="@+id/searchBar"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="@drawable/search_bar"
@@ -41,7 +41,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/places"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_below="@id/searchBar"
         android:background="@drawable/place_list"

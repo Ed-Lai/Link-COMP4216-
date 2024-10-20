@@ -27,6 +27,9 @@ public class UserDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         UserProfile userProfile = (UserProfile) intent.getSerializableExtra("userProfile");
 
+        String instagramHandle = intent.getStringExtra("instagram_handle");
+        String phone = intent.getStringExtra("phone");
+
         // Find UI elements in the layout
         ImageView profileImage = findViewById(R.id.profile_image);
         TextView textName = findViewById(R.id.text_name);
@@ -36,6 +39,8 @@ public class UserDetailActivity extends AppCompatActivity {
         TextView textHometown = findViewById(R.id.text_hometown);
         TextView textRelationshipStatus = findViewById(R.id.text_relationship_status);
         ImageButton backButton = findViewById(R.id.back_button);
+        TextView textInstagramHandle = findViewById(R.id.instagram_handle);
+        TextView textPhone = findViewById(R.id.phone_number);
 
         // Set up the back button to finish the activity and return to the previous page
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -59,6 +64,8 @@ public class UserDetailActivity extends AppCompatActivity {
             textGender.setText(userProfile.getGender());
             textHometown.setText(userProfile.getHometown());
             textRelationshipStatus.setText(userProfile.getRelationshipStatus());
+            textInstagramHandle.setText(instagramHandle);
+            textPhone.setText(phone);
 
             // Load the user's avatar
             if (userProfile.getProfilePictureUrl() != null && !userProfile.getProfilePictureUrl().isEmpty()) {

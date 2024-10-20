@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/profile_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_below="@id/line"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
@@ -90,7 +90,7 @@
         android:layout_marginStart="35dp"
         android:layout_marginTop="230dp"
         android:layout_alignBaseline="@id/input_name"
-        android:text="Name"
+        android:text="Full Name"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="normal" />
@@ -116,7 +116,7 @@
         android:layout_alignBaseline="@id/input_username"
         android:layout_marginStart="35dp"
         android:layout_marginTop="20dp"
-        android:text="Username"
+        android:text="Instagram\nUsername"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="normal" />
@@ -153,7 +153,35 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="150dp"
         android:layout_below="@id/input_username"
+        android:layout_marginTop="20dp"
         android:hint="18"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:focusable="false"
+        android:clickable="true"/>
+
+    <!-- Phone Label -->
+    <TextView
+        android:id="@+id/label_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/input_phone"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Mobile"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="normal" />
+
+    <!-- Phone Input -->
+    <EditText
+        android:id="@+id/input_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="150dp"
+        android:layout_below="@id/input_age"
+        android:hint="Phone Number"
         android:textColorHint="#FFFFFF"
         android:textColor="#FFFFFF"
         android:textSize="15sp"
@@ -178,7 +206,7 @@
         android:id="@+id/input_interests"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/input_age"
+        android:layout_below="@id/input_phone"
         android:layout_marginStart="150dp"
         android:hint="Your interests"
         android:textColorHint="#FFFFFF"
@@ -303,7 +331,7 @@
         android:layout_alignBaseline="@id/input_visible"
         android:layout_marginStart="35dp"
         android:layout_marginTop="20dp"
-        android:text="Visiable"
+        android:text="Visible"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="normal" />
